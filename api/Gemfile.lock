@@ -156,6 +156,8 @@ GEM
       builder
       minitest (>= 5.0)
       ruby-progressbar
+    mocha (2.1.0)
+      ruby2_keywords (>= 0.0.5)
     msgpack (1.7.2)
     mutex_m (0.1.2)
     nenv (0.3.0)
@@ -292,6 +294,7 @@ DEPENDENCIES
   icalendar
   minitest-power_assert
   minitest-reporters
+  mocha
   pg (~> 1.1)
   pry-rails
   puma (>= 5.0)
