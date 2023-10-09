@@ -44,6 +44,7 @@ class Calendar::Event < ApplicationRecord
     "#{latitude};#{longitude}"
   end
 
+  # rubocop:disable Metrics/AbcSize
   def register!(cal)
     cal.event do |e|
       e.uid = gen_uuid
@@ -56,6 +57,7 @@ class Calendar::Event < ApplicationRecord
       e.ip_class = 'PUBLIC'
     end
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 

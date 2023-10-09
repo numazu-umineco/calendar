@@ -1,3 +1,4 @@
+# rubocop:disable Metrics/BlockLength
 ApplicationRecord.transaction do
   cal = Calendar::Detail.create!(id: 'numazu-city', name: '沼津市イベントカレンダー')
 
@@ -58,3 +59,4 @@ ApplicationRecord.transaction do
     last_modified_user: 'umineco-admin',
   )
 end
+# rubocop:enable Metrics/BlockLength
