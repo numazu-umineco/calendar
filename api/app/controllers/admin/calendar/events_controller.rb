@@ -1,5 +1,5 @@
 class Admin::Calendar::EventsController < Admin::Calendar::BaseController
-  before_action :set_calendar_event, only: %i[ show update destroy ]
+  before_action :set_calendar_event, only: %i[show update destroy]
 
   def index
     @events = Calendar::Event.kept

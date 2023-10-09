@@ -1,5 +1,5 @@
 class Admin::Calendar::DetailsController < Admin::Calendar::BaseController
-  before_action :set_calendar_detail, only: %i[ show update destroy ]
+  before_action :set_calendar_detail, only: %i[show update destroy]
 
   def index
     @calendar_details = Calendar::Detail.kept

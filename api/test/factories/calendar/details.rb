@@ -16,6 +16,6 @@
 FactoryBot.define do
   factory :calendar_detail, class: 'Calendar::Detail' do
     id { SecureRandom.hex }
-    name { "MyString" }
+    name { 'MyString' }
   end
 end

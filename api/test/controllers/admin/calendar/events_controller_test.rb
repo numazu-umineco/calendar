@@ -1,4 +1,4 @@
-require "test_helper"
+require 'test_helper'
 
 class Admin::Calendar::EventsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -6,12 +6,12 @@ class Admin::Calendar::EventsControllerTest < ActionDispatch::IntegrationTest
     @event = create(:calendar_event, calendar: @calendar)
   end
 
-  test "should get index" do
+  test 'should get index' do
     get admin_calendar_events_url, as: :json
     assert_response :success
   end
 
-  test "should create calendar_event" do
+  test 'should create calendar_event' do
     summary = '沼津夏まつり・狩野川花火大会'
     description = '第76回沼津夏まつり・狩野川花火大会を2023年7月29日㈯、30日㈰に開催します。'
     location = '静岡県沼津市'
@@ -21,7 +21,7 @@ class Admin::Calendar::EventsControllerTest < ActionDispatch::IntegrationTest
     longitude = 138.859776
     modified_user = 'umineco-admin'
 
-    assert_difference("Calendar::Event.count") do
+    assert_difference('Calendar::Event.count') do
       post admin_calendar_events_url,
            headers: { 'x-user-name': modified_user },
            params: {
@@ -45,12 +45,12 @@ class Admin::Calendar::EventsControllerTest < ActionDispatch::IntegrationTest
     assert { event.last_modified_user == modified_user }
   end
 
-  test "should show calendar_event" do
+  test 'should show calendar_event' do
     get admin_calendar_event_url(@event), as: :json
     assert_response :success
   end
 
-  test "should update calendar_event" do
+  test 'should update calendar_event' do
     summary = '沼津夏まつり・狩野川花火大会'
     description = '第76回沼津夏まつり・狩野川花火大会を2023年7月29日㈯、30日㈰に開催します。'
     location = '静岡県沼津市'
@@ -80,7 +80,7 @@ class Admin::Calendar::EventsControllerTest < ActionDispatch::IntegrationTest
     assert { @event.last_modified_user == modified_user }
   end
 
-  test "should destroy calendar_event" do
+  test 'should destroy calendar_event' do
     now = Time.zone.now
     travel_to(now) do
       delete admin_calendar_event_url(@event), as: :json

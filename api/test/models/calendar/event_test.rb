@@ -25,7 +25,7 @@
 #
 #  fk_rails_...  (calendar_detail_id => calendar_details.id)
 #
-require "test_helper"
+require 'test_helper'
 
 class Calendar::EventTest < ActiveSupport::TestCase
   subject { build(:calendar_event) }
