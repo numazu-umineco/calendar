@@ -38,6 +38,8 @@ class Calendar::Event < ApplicationRecord
              foreign_key: :calendar_detail_id,
              inverse_of: :events
 
+  scope :recent, ->(limit) { order(created_at: :desc).limit(limit) }
+
   def geo
     "#{latitude};#{longitude}"
   end

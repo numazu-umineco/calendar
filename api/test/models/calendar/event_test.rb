@@ -58,4 +58,9 @@ class Calendar::EventTest < ActiveSupport::TestCase
     assert { calendar.events[0].dtstart.to_i == event.start_at.to_i }
     assert { calendar.events[0].dtend.to_i == event.end_at.to_i }
   end
+
+  test '.recentは最新のイベントを指定した個数取得する' do
+    events = Array.new(5) { create(:calendar_event) }
+    assert { Calendar::Event.recent(3) == events.reverse.first(3) }
+  end
 end
