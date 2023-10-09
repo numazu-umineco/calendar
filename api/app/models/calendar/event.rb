@@ -37,4 +37,27 @@ class Calendar::Event < ApplicationRecord
              class_name: 'Calendar::Detail',
              foreign_key: :calendar_detail_id,
              inverse_of: :events
+
+  def geo
+    "#{latitude};#{longitude}"
+  end
+
+  def register!(cal)
+    cal.event do |e|
+      e.uid = gen_uuid
+      e.dtstart = Icalendar::Values::DateTime.new(start_at)
+      e.dtend = Icalendar::Values::DateTime.new(end_at)
+      e.summary = summary
+      e.description = description
+      e.location = location
+      e.geo = [latitude, longitude]
+      e.ip_class = 'PUBLIC'
+    end
+  end
+
+  private
+
+  def gen_uuid
+    SecureRandom.uuid
+  end
 end

@@ -34,4 +34,28 @@ class Calendar::EventTest < ActiveSupport::TestCase
   should validate_presence_of(:start_at)
   should validate_presence_of(:end_at)
   should belong_to(:calendar)
+
+  test '#geoは緯度経度をフォーマットした文字列を返す' do
+    latitude = 35.123
+    longitude = 77.0369
+    event = create(:calendar_event, latitude: latitude, longitude: longitude)
+    assert { event.geo == "#{latitude};#{longitude}" }
+  end
+
+  test '#register!は受け取ったcalendarオブジェクトにイベントを登録していく' do
+    calendar = Icalendar::Calendar.new
+    event = create(:calendar_event, latitude: 35.123, longitude: 138.987)
+    assert { calendar.events.empty? }
+
+    uid = SecureRandom.uuid
+    event.stubs(:gen_uuid).returns(uid)
+    event.register!(calendar)
+    assert { calendar.events.length == 1 }
+    assert { calendar.events[0].summary == event.summary }
+    assert { calendar.events[0].description == event.description }
+    assert { calendar.events[0].location == event.location }
+    assert { calendar.events[0].geo == event.geo }
+    assert { calendar.events[0].dtstart.to_i == event.start_at.to_i }
+    assert { calendar.events[0].dtend.to_i == event.end_at.to_i }
+  end
 end

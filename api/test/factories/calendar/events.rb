@@ -29,7 +29,7 @@ FactoryBot.define do
   factory :calendar_event, class: 'Calendar::Event' do
     summary { "市政100周年イベント day.2" }
     description { "100周年イベント2日目です！" }
-    location { '〒410-0801 静岡県沼津市大手町1丁目1-4 プラサヴェルデ' }
+    location { '〒410-0801 静岡県沼津市大手町1丁目1-4' }
     latitude { 1.5 }
     longitude { 1.5 }
     start_at { 1.days.since }
