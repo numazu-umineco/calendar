@@ -22,4 +22,13 @@ class Calendar::Detail < ApplicationRecord
            class_name: 'Calendar::Event',
            foreign_key: :calendar_detail_id,
            inverse_of: :calendar
+
+  def to_ical
+    cal = Icalendar::Calendar.new
+    events.each do |event|
+      event.register!(cal)
+    end
+    cal.publish
+    cal.to_ical
+  end
 end
