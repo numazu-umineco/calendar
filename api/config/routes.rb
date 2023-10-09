@@ -3,6 +3,10 @@ Rails.application.routes.draw do
 
   namespace :public do
     get 'health/alive', to: 'health#alive'
+    namespace :calendar do
+      get :recent
+      get :download, params: :id
+    end
   end
 
   namespace :admin do
