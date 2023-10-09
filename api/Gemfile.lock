@@ -123,6 +123,9 @@ GEM
       minitest (>= 3.0)
     i18n (1.14.1)
       concurrent-ruby (~> 1.0)
+    icalendar (2.9.0)
+      ice_cube (~> 0.16)
+    ice_cube (0.16.4)
     io-console (0.6.0)
     irb (1.8.1)
       rdoc
@@ -286,6 +289,7 @@ DEPENDENCIES
   faker
   guard
   guard-minitest
+  icalendar
   minitest-power_assert
   minitest-reporters
   pg (~> 1.1)
