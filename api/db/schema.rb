@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_09_070737) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_09_073528) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -23,4 +23,22 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_09_070737) do
     t.index ["name"], name: "index_calendar_details_on_name", unique: true
   end
 
+  create_table "calendar_events", force: :cascade do |t|
+    t.text "summary", null: false
+    t.text "description", null: false
+    t.text "location"
+    t.float "latitude"
+    t.float "longitude"
+    t.datetime "start_at", null: false
+    t.datetime "end_at", null: false
+    t.datetime "discarded_at"
+    t.string "calendar_detail_id", null: false
+    t.string "last_modified_user", default: "", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["calendar_detail_id"], name: "index_calendar_events_on_calendar_detail_id"
+    t.index ["discarded_at"], name: "index_calendar_events_on_discarded_at"
+  end
+
+  add_foreign_key "calendar_events", "calendar_details"
 end
