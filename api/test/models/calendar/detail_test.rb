@@ -15,8 +15,7 @@
 #
 require 'test_helper'
 
-module Calendar
-  class DetailTest < ActiveSupport::TestCase
-    should validate_presence_of(:name)
-  end
+class Calendar::DetailTest < ActiveSupport::TestCase
+  should validate_presence_of(:name)
+  should have_many(:events)
 end

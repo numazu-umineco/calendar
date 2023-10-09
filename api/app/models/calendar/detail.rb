@@ -17,4 +17,9 @@ class Calendar::Detail < ApplicationRecord
   include Discard::Model
 
   validates :name, presence: true, uniqueness: true
+
+  has_many :events,
+           class_name: 'Calendar::Event',
+           foreign_key: :calendar_detail_id,
+           inverse_of: :calendar
 end
