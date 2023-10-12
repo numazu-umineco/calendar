@@ -28,6 +28,14 @@
             </v-scale-transition>
           </v-overlay>
           <h3 class="mb-5">イベント新規登録</h3>
+          <v-alert
+            v-if="errorMessage"
+            type="error"
+            dismissible
+            class="mb-5"
+            >
+            {{ errorMessage }}
+          </v-alert>
           <v-text-field
             v-model="summary"
             label="イベントタイトル"
@@ -109,11 +117,13 @@
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
 import dayjs from 'dayjs'
+import axios, { AxiosResponse } from 'axios'
 
 export default defineComponent({
   setup() {
     const loading = ref(false);
     const completed = ref(false);
+    const errorMessage = ref('');
     const summary = ref('');
     const description = ref('');
     const url = ref('');
@@ -162,16 +172,30 @@ export default defineComponent({
       endAtRaw.value = dayjs().hour(0).minute(0);
     };
 
-    const submit = () => {
+    const submit = async () => {
       completed.value = false;
-      console.log(summary.value);
-      console.log(description.value);
-      console.log(url.value);
-      console.log(location.value);
-      console.log(isAllDay.value);
-      console.log(startAtRaw.value);
-      console.log(endAtRaw.value);
       loading.value = true;
+      errorMessage.value = '';
+      let response: AxiosResponse = null;
+      try {
+        response = await axios.post('https://httpbin.org/post', {
+          summary: summary.value,
+          description: description.value,
+          url: url.value,
+          location: location.value,
+          isAllDay: isAllDay.value,
+          startAt: startAtRaw.value.format('YYYY-MM-DDTHH:mm'),
+          endAt: endAtRaw.value.format('YYYY-MM-DDTHH:mm'),
+        });
+      } catch (err) {
+        console.error(err);
+        loading.value = false;
+        errorMessage.value = err;
+        return;
+      }
+
+      console.log(response.data);
+
       setTimeout(() => {
         completed.value = true;
       }, 1000);
@@ -185,6 +209,7 @@ export default defineComponent({
     return {
       loading,
       completed,
+      errorMessage,
       summary,
       description,
       url,
