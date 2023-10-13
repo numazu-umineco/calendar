@@ -39,16 +39,20 @@
           <v-text-field
             v-model="summary"
             label="イベントタイトル"
+            :rules="requiredRules"
             variant="outlined"
             density="compact"
+            required
             class="mb-2"
           ></v-text-field>
 
           <v-textarea
             v-model="description"
             label="イベントの詳細"
+            :rules="requiredRules"
             variant="outlined"
             density="compact"
+            required
             class="mb-2"
           ></v-textarea>
 
@@ -63,6 +67,7 @@
           <v-text-field
             v-model="location"
             label="場所 (施設名・住所)"
+            :rules="requiredRules"
             variant="outlined"
             density="compact"
             class="mb-2"
@@ -70,7 +75,7 @@
 
           <div class="text-medium-emphasis mb-3">
             基本的にイベント日程は「終日」を指定し、時間を記述する場合は「イベント詳細」欄に記述してください。<br />
-            ただし、イベントの開催期間が「1時間以下」のものに関しては、時間の指定を行うことを検討できます。
+            ただし、イベントの開催期間が「1時間以下」のものに関してのみ、時間の指定を行うことを検討できます。
           </div>
           <div class="d-flex flex-fill flex-column flex-md-row justify-center align-center mb-2">
             <div class="flex-md-shrink-0 flex-md-grow-0 mr-md-5">
@@ -89,12 +94,28 @@
                 density="compact"
               ></v-text-field>
             </div>
-            <div class="flex-md-grow-1">
+            <div class="flex-md-grow-0 mr-md-5">
+              <v-text-field
+                v-model="startWeekday"
+                readonly
+                variant="plain"
+                density="compact"
+              ></v-text-field>
+            </div>
+            <div class="flex-md-grow-1 mr-md-5">
               <v-text-field
                 v-model="endAt"
                 :type="dateInputType"
                 label="終了"
                 variant="outlined"
+                density="compact"
+              ></v-text-field>
+            </div>
+            <div class="flex-md-grow-0">
+              <v-text-field
+                v-model="endWeekday"
+                readonly
+                variant="plain"
                 density="compact"
               ></v-text-field>
             </div>
@@ -159,6 +180,15 @@ export default defineComponent({
       }
     });
 
+    const requiredRules = ref([
+      (v: string) => !!v || '必須項目です',
+    ])
+
+    const weekday = ['日', '月', '火', '水', '木', '金', '土']
+
+    const startWeekday = computed(() => `(${weekday[startAtRaw.value.day()]})`);
+    const endWeekday = computed(() => `(${weekday[endAtRaw.value.day()]})`);
+
     const dateInputType = computed(() => isAllDay.value ? 'date' : 'datetime-local');
 
     const clear = () => {
@@ -176,7 +206,7 @@ export default defineComponent({
       completed.value = false;
       loading.value = true;
       errorMessage.value = '';
-      let response: AxiosResponse = null;
+      let response: AxiosResponse;
       try {
         response = await axios.post('https://httpbin.org/post', {
           summary: summary.value,
@@ -187,22 +217,30 @@ export default defineComponent({
           startAt: startAtRaw.value.format('YYYY-MM-DDTHH:mm'),
           endAt: endAtRaw.value.format('YYYY-MM-DDTHH:mm'),
         });
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
-        loading.value = false;
-        errorMessage.value = err;
+        await setTimeout(() => {
+          loading.value = false;
+          errorMessage.value = err.message;
+        }, 1000);
         return;
       }
 
       console.log(response.data);
 
-      setTimeout(() => {
-        completed.value = true;
-      }, 1000);
-      setTimeout(() => {
-        loading.value = false;
-        clear();
-      }, 1500);
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          completed.value = true;
+          resolve();
+        }, 1000);
+      });
+      await new Promise<void> ((resolve) => {
+        setTimeout(() => {
+          loading.value = false;
+          clear();
+          resolve();
+        }, 500);
+      });
     };
 
 
@@ -217,7 +255,10 @@ export default defineComponent({
       isAllDay,
       startAt,
       endAt,
+      startWeekday,
+      endWeekday,
       dateInputType,
+      requiredRules,
       submit,
       clear
     }
