@@ -1,0 +1,8 @@
+FROM ruby:3.2.2
+
+WORKDIR /rails
+
+COPY Gemfile Gemfile
+COPY Gemfile.lock Gemfile.lock
+RUN bundle -j4
+COPY . .
