@@ -1,0 +1,207 @@
+require: rubocop-rails
+
+AllCops:
+  TargetRubyVersion: 3.2
+
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
+
+Style/ExponentialNotation:
+  Enabled: true
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/SlicingWithRange:
+  Enabled: true
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - test/**/*
+    - config/routes.rb
+    - lib/tasks/auto_annotate_models.rake
+    - lib/tasks/factory.rake
+    - config/environments/development.rb
+
+Layout/LineLength:
+  Max: 128 # cookpad style
+  IgnoredPatterns: ['\A#']
+  Exclude:
+    - test/**/*
+    - config/initializers/devise.rb
+
+Metrics/MethodLength:
+  Max: 2000
+  Exclude:
+    - db/migrate/*
+
+Metrics/AbcSize:
+  Max: 20
+  Exclude:
+    - db/migrate/*
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/BlockDelimiters:
+  EnforcedStyle: braces_for_chaining # cookpad style
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Style/FormatString:
+  EnforcedStyle: percent
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Style/MultilineBlockChain:
+  Enabled: false
+
+Style/NumericPredicate:
+  Enabled: false
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: single_quotes
+  Exclude:
+    - test/factories/*
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Layout/TrailingWhitespace:
+  Exclude:
+    - test/factories/*
+
+Layout/EmptyLinesAroundBlockBody:
+  Exclude:
+    - test/factories/*
+
+Style/SymbolArray:
+  Enabled: false
+
+# FIXME: この書き方だとWarningが出るのでどちらかに統一するときが来たら修正する
+Style/PercentLiteralDelimiters:
+  Enabled: true
+  PreferredDelimiters:
+    '%': '[]'
+    '%i': '[]'
+    '%q': '{}'
+    '%Q': '{}'
+    '%r': '{}'
+    '%s': '[]'
+    '%w': '[]'
+    '%W': '[]'
+
+Style/ConditionalAssignment:
+  Enabled: false
+
+Lint/SuppressedException:
+  Exclude:
+    - test/**/*
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Metrics/ClassLength:
+  Max: 128
+
+Naming/PredicateName:
+  Enabled: true
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Layout/MultilineMethodCallBraceLayout:
+  EnforcedStyle: symmetrical
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+
+Style/EmptyElse:
+  EnforcedStyle: empty
+
+Metrics/PerceivedComplexity:
+  Max: 10
+
+Style/GuardClause:
+  MinBodyLength: 3
+
+Style/EmptyCaseCondition:
+  Enabled: false
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Rails/RakeEnvironment:
+  Exclude:
+    - lib/tasks/auto_annotate_models.rake
+
+Rails/ApplicationController:
+  Exclude:
+    - app/controllers/errors_controller.rb
+
+Rails/BulkChangeTable:
+  Exclude:
+    - db/migrate/*
+
+Style/ZeroLengthPredicate:
+  Enabled: false
+
+Rails/NotNullColumn:
+  Enabled: false
+
+Rails/LexicallyScopedActionFilter:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Max: 7
+
+Style/HashSyntax:
+    EnforcedShorthandSyntax: either
+
+Rails/InverseOf:
+  Enabled: false
