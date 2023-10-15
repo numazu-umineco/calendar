@@ -2,7 +2,7 @@
 #
 # Table name: calendar_events
 #
-#  id                 :bigint           not null, primary key
+#  id                 :integer          not null, primary key
 #  description        :text             not null
 #  discarded_at       :datetime
 #  end_at             :datetime         not null
@@ -23,7 +23,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (calendar_detail_id => calendar_details.id)
+#  calendar_detail_id  (calendar_detail_id => calendar_details.id)
 #
 FactoryBot.define do
   factory :calendar_event, class: 'Calendar::Event' do
