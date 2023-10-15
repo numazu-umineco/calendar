@@ -3,6 +3,7 @@
 # Table name: calendar_events
 #
 #  id                 :integer          not null, primary key
+#  all_day            :boolean          default(FALSE), not null
 #  description        :text             not null
 #  discarded_at       :datetime
 #  end_at             :datetime         not null
