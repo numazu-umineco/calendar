@@ -54,7 +54,7 @@ class Calendar::EventTest < ActiveSupport::TestCase
     assert { calendar.events[0].summary == event.summary }
     assert { calendar.events[0].description == event.description }
     assert { calendar.events[0].location == event.location }
-    assert { calendar.events[0].geo == event.geo }
+    assert { calendar.events[0].geo.map(&:to_s).join(';') == event.geo }
     assert { calendar.events[0].dtstart.to_i == event.start_at.to_i }
     assert { calendar.events[0].dtend.to_i == event.end_at.to_i }
   end
