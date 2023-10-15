@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2023_10_09_073528) do
+ActiveRecord::Schema[7.1].define(version: 2023_10_15_084009) do
   create_table "calendar_details", id: :string, force: :cascade do |t|
     t.string "name", null: false
     t.datetime "discarded_at"
@@ -33,6 +33,7 @@ ActiveRecord::Schema[7.1].define(version: 2023_10_09_073528) do
     t.string "last_modified_user", default: "", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "all_day", default: false, null: false
     t.index ["calendar_detail_id"], name: "index_calendar_events_on_calendar_detail_id"
     t.index ["discarded_at"], name: "index_calendar_events_on_discarded_at"
   end
