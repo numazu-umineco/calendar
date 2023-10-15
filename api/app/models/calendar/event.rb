@@ -49,8 +49,8 @@ class Calendar::Event < ApplicationRecord
   def register!(cal)
     cal.event do |e|
       e.uid = gen_uuid
-      e.dtstart = Icalendar::Values::DateTime.new(start_at)
-      e.dtend = Icalendar::Values::DateTime.new(end_at)
+      e.dtstart = format_ical_dt(start_at)
+      e.dtend = format_ical_dt(end_at)
       e.summary = summary
       e.description = description
       e.location = location
@@ -61,6 +61,14 @@ class Calendar::Event < ApplicationRecord
   # rubocop:enable Metrics/AbcSize
 
   private
+
+  def format_ical_dt(at)
+    if all_day?
+      Icalendar::Values::Date.new(at)
+    else
+      Icalendar::Values::DateTime.new(at)
+    end
+  end
 
   def gen_uuid
     SecureRandom.uuid
