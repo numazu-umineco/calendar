@@ -58,5 +58,14 @@ ApplicationRecord.transaction do
     location: 'キラメッセぬまづ',
     last_modified_user: 'umineco-admin',
   )
+  cal.events.create!(
+    summary: 'ただの週末の沼津',
+    description: 'ただの週末の沼津',
+    start_at: DateTime.parse('2023-10-09 13:00'),
+    end_at: DateTime.parse('2023-10-09 20:00'),
+    location: '沼津市',
+    last_modified_user: 'umineco-admin',
+    all_day: true
+  )
 end
 # rubocop:enable Metrics/BlockLength
