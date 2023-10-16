@@ -2,7 +2,8 @@
 #
 # Table name: calendar_events
 #
-#  id                 :bigint           not null, primary key
+#  id                 :integer          not null, primary key
+#  all_day            :boolean          default(FALSE), not null
 #  description        :text             not null
 #  discarded_at       :datetime
 #  end_at             :datetime         not null
@@ -23,7 +24,7 @@
 #
 # Foreign Keys
 #
-#  fk_rails_...  (calendar_detail_id => calendar_details.id)
+#  calendar_detail_id  (calendar_detail_id => calendar_details.id)
 #
 require 'test_helper'
 
@@ -54,7 +55,7 @@ class Calendar::EventTest < ActiveSupport::TestCase
     assert { calendar.events[0].summary == event.summary }
     assert { calendar.events[0].description == event.description }
     assert { calendar.events[0].location == event.location }
-    assert { calendar.events[0].geo == event.geo }
+    assert { calendar.events[0].geo.map(&:to_s).join(';') == event.geo }
     assert { calendar.events[0].dtstart.to_i == event.start_at.to_i }
     assert { calendar.events[0].dtend.to_i == event.end_at.to_i }
   end
