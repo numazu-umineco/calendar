@@ -27,7 +27,6 @@
               </div>
             </v-scale-transition>
           </v-overlay>
-          <h3 class="mb-5">イベント新規登録</h3>
           <v-alert
             v-if="errorMessage"
             type="error"
@@ -42,41 +41,26 @@
             :rules="requiredRules"
             variant="outlined"
             density="compact"
-            required
             class="mb-2"
           ></v-text-field>
 
-          <v-textarea
-            v-model="description"
-            label="イベントの詳細"
-            :rules="requiredRules"
-            variant="outlined"
-            density="compact"
-            required
-            class="mb-2"
-          ></v-textarea>
-
-          <v-text-field
-            v-model="url"
-            label="情報元URL (公式サイト・Twitterなど)"
-            variant="outlined"
-            density="compact"
-            class="mb-2"
-          ></v-text-field>
-
-          <v-text-field
-            v-model="location"
-            label="場所 (施設名・住所)"
+          <v-select
+            v-model="calendarId"
+            :items="calendars"
+            item-title="name"
+            item-value="id"
+            label="イベントの種類"
             :rules="requiredRules"
             variant="outlined"
             density="compact"
             class="mb-2"
-          ></v-text-field>
+          />
 
           <div class="text-medium-emphasis mb-3">
             基本的にイベント日程は「終日」を指定し、時間を記述する場合は「イベント詳細」欄に記述してください。<br />
             ただし、イベントの開催期間が「1時間以下」のものに関してのみ、時間の指定を行うことを検討できます。
           </div>
+
           <div class="d-flex flex-fill flex-column flex-md-row justify-center align-center mb-2">
             <div class="flex-md-shrink-0 flex-md-grow-0 mr-md-5">
               <v-checkbox
@@ -121,6 +105,33 @@
             </div>
           </div>
 
+          <v-textarea
+            v-model="description"
+            label="イベントの詳細"
+            :rules="requiredRules"
+            variant="outlined"
+            density="compact"
+            required
+            class="mb-2"
+          ></v-textarea>
+
+          <v-text-field
+            v-model="url"
+            label="情報元URL (公式サイト・Twitterなど)"
+            variant="outlined"
+            density="compact"
+            class="mb-2"
+          ></v-text-field>
+
+          <v-text-field
+            v-model="location"
+            label="場所 (施設名・住所)"
+            :rules="requiredRules"
+            variant="outlined"
+            density="compact"
+            class="mb-2"
+          ></v-text-field>
+
           <div class="d-flex">
             <div class="ml-auto">
               <v-btn color="info" variant="outlined" @click="clear">クリア</v-btn>
@@ -136,7 +147,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref, computed, onMounted, watch, type Ref } from 'vue'
 import dayjs from 'dayjs'
 import axios, { AxiosResponse } from 'axios'
 
@@ -152,6 +163,8 @@ export default defineComponent({
     const isAllDay = ref(true);
     const startAtRaw = ref(dayjs().hour(0).minute(0));
     const endAtRaw = ref(dayjs().hour(0).minute(0));
+    const calendars = ref([]);
+    const calendarId = ref(null) as Ref<null | string>;
 
     const startAt = computed({
       get: () => {
@@ -180,6 +193,12 @@ export default defineComponent({
       }
     });
 
+    watch(startAtRaw, () => {
+      if (startAtRaw.value.isAfter(endAtRaw.value)) {
+        endAtRaw.value = startAtRaw.value;
+      }
+    });
+
     const requiredRules = ref([
       (v: string) => !!v || '必須項目です',
     ])
@@ -191,9 +210,19 @@ export default defineComponent({
 
     const dateInputType = computed(() => isAllDay.value ? 'date' : 'datetime-local');
 
+    onMounted(async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/admin/calendar/details');
+        calendars.value = response.data;
+      } catch (err: any) {
+        console.error(err);
+      }
+    });
+
     const clear = () => {
       loading.value = false;
       summary.value = '';
+      calendarId.value = null;
       description.value = '';
       url.value = '';
       location.value = '';
@@ -208,15 +237,18 @@ export default defineComponent({
       errorMessage.value = '';
       let response: AxiosResponse;
       try {
-        response = await axios.post('https://httpbin.org/post', {
-          summary: summary.value,
-          description: description.value,
-          url: url.value,
-          location: location.value,
-          isAllDay: isAllDay.value,
-          startAt: startAtRaw.value.format('YYYY-MM-DDTHH:mm'),
-          endAt: endAtRaw.value.format('YYYY-MM-DDTHH:mm'),
-        });
+        response = await axios.post('http://localhost:3000/admin/calendar/events', {
+          calendar_event: {
+            calendar_id: calendarId.value,
+            summary: summary.value,
+            description: description.value,
+            url: url.value,
+            location: location.value,
+            isAllDay: isAllDay.value,
+            start_at: startAtRaw.value.toISOString(),
+            end_at: endAtRaw.value.toISOString(),
+          }
+        }, { headers: { 'x-user-name': 'admin' } });
       } catch (err: any) {
         console.error(err);
         await setTimeout(() => {
@@ -248,6 +280,8 @@ export default defineComponent({
       loading,
       completed,
       errorMessage,
+      calendars,
+      calendarId,
       summary,
       description,
       url,
