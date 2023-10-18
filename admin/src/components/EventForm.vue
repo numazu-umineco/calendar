@@ -151,6 +151,8 @@ import { defineComponent, ref, computed, onMounted, watch, type Ref } from 'vue'
 import dayjs from 'dayjs'
 import axios, { AxiosResponse } from 'axios'
 
+import type { Calendar } from '@/types/calendar'
+
 export default defineComponent({
   setup() {
     const loading = ref(false);
@@ -163,8 +165,8 @@ export default defineComponent({
     const isAllDay = ref(true);
     const startAtRaw = ref(dayjs().hour(0).minute(0));
     const endAtRaw = ref(dayjs().hour(0).minute(0));
-    const calendars = ref([]);
-    const calendarId = ref(null) as Ref<null | string>;
+    const calendars = ref([]) as Ref<Array<Calendar>>;
+    const calendarId = ref(null);
 
     const startAt = computed({
       get: () => {
@@ -213,7 +215,8 @@ export default defineComponent({
     onMounted(async () => {
       try {
         const response = await axios.get('http://localhost:3000/admin/calendar/details');
-        calendars.value = response.data;
+        calendars.value = response.data as Array<Calendar>;
+        console.log(calendars.value);
       } catch (err: any) {
         console.error(err);
       }

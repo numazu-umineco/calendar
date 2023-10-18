@@ -21,9 +21,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, type Ref } from 'vue'
 import axios from 'axios'
-import dayjs from 'dayjs'
+
+import type { Event } from '@/types/event'
+import { Calendar } from '@/types/calendar'
 
 import EventForm from '@/components/EventForm.vue'
 import EventCard from '@/components/EventCard.vue'
@@ -35,19 +37,22 @@ export default defineComponent({
   },
   setup() {
     const loading = ref(true);
-    const events = ref([]);
+    const calendars = ref([]) as Ref<Array<Calendar>>;
+    const events = ref([]) as Ref<Array<Event>>;
 
     onMounted(async () => {
       loading.value = true;
       try {
-        const { data } = await axios.get('http://localhost:3000/admin/calendar/events');
-        events.value = data;
+        const { data: eventsResponseData } = await axios.get('http://localhost:3000/admin/calendar/events');
+        events.value = eventsResponseData;
+        const { data: calendarsResponseData } = await axios.get('http://localhost:3000/admin/calendar/details');
+        calendars.value = calendarsResponseData;
       } catch (err: any) {
         console.error(err);
       } finally {
         loading.value = false;
       }
-    })
+    });
 
     return {
       loading,
