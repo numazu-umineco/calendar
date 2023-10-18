@@ -214,7 +214,7 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        const response = await axios.get('http://localhost:3000/admin/calendar/details');
+        const response = await axios.get('/api/calendar/details');
         calendars.value = response.data as Array<Calendar>;
         console.log(calendars.value);
       } catch (err: any) {
@@ -240,7 +240,7 @@ export default defineComponent({
       errorMessage.value = '';
       let response: AxiosResponse;
       try {
-        response = await axios.post('http://localhost:3000/admin/calendar/events', {
+        response = await axios.post('/api/calendar/events', {
           calendar_event: {
             calendar_id: calendarId.value,
             summary: summary.value,

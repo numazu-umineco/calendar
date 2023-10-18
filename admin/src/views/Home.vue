@@ -43,9 +43,9 @@ export default defineComponent({
     onMounted(async () => {
       loading.value = true;
       try {
-        const { data: eventsResponseData } = await axios.get('http://localhost:3000/admin/calendar/events');
+        const { data: eventsResponseData } = await axios.get('/api/calendar/events');
         events.value = eventsResponseData;
-        const { data: calendarsResponseData } = await axios.get('http://localhost:3000/admin/calendar/details');
+        const { data: calendarsResponseData } = await axios.get('/api/calendar/details');
         calendars.value = calendarsResponseData;
       } catch (err: any) {
         console.error(err);
