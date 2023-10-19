@@ -48,7 +48,7 @@ class Admin::Calendar::EventsController < Admin::Calendar::BaseController
   def calendar_event_params
     params.require(:calendar_event).permit(
       :summary, :description, :location, :latitude, :longitude,
-      :start_at, :end_at, :discarded_at
+      :start_at, :end_at, :discarded_at, :all_day
     )
   end
 end
