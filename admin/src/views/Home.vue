@@ -26,6 +26,7 @@ import axios from 'axios'
 
 import type { Event } from '@/types/event'
 import { Calendar } from '@/types/calendar'
+import { useCalendarStore } from '@/stores/calendar';
 
 import EventForm from '@/components/EventForm.vue'
 import EventCard from '@/components/EventCard.vue'
@@ -40,13 +41,14 @@ export default defineComponent({
     const calendars = ref([]) as Ref<Array<Calendar>>;
     const events = ref([]) as Ref<Array<Event>>;
 
+    const calendarStore = useCalendarStore();
+
     onMounted(async () => {
       loading.value = true;
       try {
+        calendars.value = calendarStore.calendars;
         const { data: eventsResponseData } = await axios.get('/api/calendar/events');
         events.value = eventsResponseData;
-        const { data: calendarsResponseData } = await axios.get('/api/calendar/details');
-        calendars.value = calendarsResponseData;
       } catch (err: any) {
         console.error(err);
       } finally {
