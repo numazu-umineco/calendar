@@ -6,13 +6,12 @@
     </v-card-title>
     <v-card-text>
       <div class="mb-1">
-        <v-icon icon="mdi-calendar" /> {{ startAt }} - {{ endAt }}
+        <v-icon icon="mdi-calendar" /> {{ formatDateTime }}
       </div>
       <div class="mb-1">
         <v-icon icon="mdi-map-marker"/> {{ event.location || '(未記入)'}}
       </div>
-      <div>{{ event.description }}</div>
-      <div>{{ event.calendar_detail_id }} </div>
+      <div v-html="formatLine(event.description)" />
     </v-card-text>
   </v-card>
 </template>
@@ -33,15 +32,34 @@ export default defineComponent({
   setup(props) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
-    const startAt = computed(() => {
-      return dayjs.tz(props.event.start_at, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm')
-    })
-    const endAt = computed(() => {
-      return dayjs.tz(props.event.end_at, 'Asia/Tokyo').format('YYYY-MM-DD HH:mm')
-    })
+
+    const formatDateTime = computed(() => {
+      const startAtDate = dayjs(props.event.start_at).tz('Asia/Tokyo').format('YYYY-MM-DD')
+      const startAtTime = dayjs(props.event.start_at).tz('Asia/Tokyo').format('HH:mm')
+      const endAtDate = dayjs(props.event.end_at).tz('Asia/Tokyo').format('YYYY-MM-DD')
+      const endAtTime = dayjs(props.event.end_at).tz('Asia/Tokyo').format('HH:mm')
+
+      if (props.event.all_day && startAtDate === endAtDate) {
+        return `${startAtDate}`
+      }
+      if (props.event.all_day) {
+
+        return `${startAtDate} - ${endAtDate}`
+      }
+      // start_at と end_at が同じ日付の場合は日付の表示をまとめて時間の表示だけをする
+      if (startAtDate === endAtDate && startAtTime !== endAtTime) {
+        return `${startAtDate} ${startAtTime} - ${endAtTime}`
+      }
+      return `${startAtDate} ${startAtTime} - ${endAtDate} ${endAtTime}`
+    });
+
+    const formatLine = (str: string) => {
+      return str.replace(/\n/g, '<br />')
+    };
+
     return {
-      startAt,
-      endAt,
+      formatDateTime,
+      formatLine
     }
   },
 })

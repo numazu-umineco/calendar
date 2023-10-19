@@ -105,6 +105,8 @@
             </div>
           </div>
 
+          {{ startAtRaw.format() }}
+
           <v-textarea
             v-model="description"
             label="イベントの詳細"
@@ -148,13 +150,23 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch, type Ref } from 'vue'
+import { useRouter } from 'vue-router';
 import dayjs from 'dayjs'
-import axios, { AxiosResponse } from 'axios'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+import axios from 'axios'
 
 import type { Calendar } from '@/types/calendar'
+import type { Event } from '@/types/event'
 
 export default defineComponent({
   setup() {
+    dayjs.extend(utc);
+    dayjs.extend(timezone);
+    dayjs.tz.setDefault('Asia/Tokyo');
+
+    const router = useRouter();
+
     const loading = ref(false);
     const completed = ref(false);
     const errorMessage = ref('');
@@ -163,8 +175,8 @@ export default defineComponent({
     const url = ref('');
     const location = ref('');
     const isAllDay = ref(true);
-    const startAtRaw = ref(dayjs().hour(0).minute(0));
-    const endAtRaw = ref(dayjs().hour(0).minute(0));
+    const startAtRaw = ref(dayjs().startOf('day')) as Ref<dayjs.Dayjs>;
+    const endAtRaw = ref(dayjs().startOf('day')) as Ref<dayjs.Dayjs>;
     const calendars = ref([]) as Ref<Array<Calendar>>;
     const calendarId = ref(null);
 
@@ -177,21 +189,28 @@ export default defineComponent({
         }
       },
       set: (value) => {
-        startAtRaw.value = dayjs(value);
-        console.log(startAtRaw.value.format('YYYY-MM-DDTHH:mm'))
+        if (isAllDay.value) {
+          startAtRaw.value = dayjs(value).startOf('day');
+        } else {
+          startAtRaw.value = dayjs(value);
+        }
       }
     });
 
     const endAt = computed({
       get: () => {
         if (isAllDay.value) {
-          return endAtRaw.value.hour(0).minute(0).format('YYYY-MM-DD');
+          return endAtRaw.value.startOf('day').format('YYYY-MM-DD');
         } else {
           return endAtRaw.value.format('YYYY-MM-DDTHH:mm');
         }
       },
       set: (value) => {
-        endAtRaw.value = dayjs(value);
+        if (isAllDay.value) {
+          endAtRaw.value = dayjs(value).startOf('day');
+        } else {
+          endAtRaw.value = dayjs(value);
+        }
       }
     });
 
@@ -216,7 +235,6 @@ export default defineComponent({
       try {
         const response = await axios.get('/api/calendar/details');
         calendars.value = response.data as Array<Calendar>;
-        console.log(calendars.value);
       } catch (err: any) {
         console.error(err);
       }
@@ -238,20 +256,20 @@ export default defineComponent({
       completed.value = false;
       loading.value = true;
       errorMessage.value = '';
-      let response: AxiosResponse;
+      let createdEvent: Event;
       try {
-        response = await axios.post('/api/calendar/events', {
+        const response = await axios.post('/api/calendar/events', {
           calendar_event: {
             calendar_id: calendarId.value,
             summary: summary.value,
-            description: description.value,
-            url: url.value,
+            description: `${description.value}\n\n【情報元】${url.value}`,
             location: location.value,
-            isAllDay: isAllDay.value,
-            start_at: startAtRaw.value.toISOString(),
-            end_at: endAtRaw.value.toISOString(),
+            all_day: isAllDay.value,
+            start_at: startAtRaw.value.format(),
+            end_at: endAtRaw.value.format(),
           }
         }, { headers: { 'x-user-name': 'admin' } });
+        createdEvent = response.data as Event;
       } catch (err: any) {
         console.error(err);
         await setTimeout(() => {
@@ -260,8 +278,6 @@ export default defineComponent({
         }, 1000);
         return;
       }
-
-      console.log(response.data);
 
       await new Promise<void>((resolve) => {
         setTimeout(() => {
@@ -272,6 +288,7 @@ export default defineComponent({
       await new Promise<void> ((resolve) => {
         setTimeout(() => {
           loading.value = false;
+          router.push(`/events/${createdEvent.id}`);
           clear();
           resolve();
         }, 500);
@@ -292,6 +309,8 @@ export default defineComponent({
       isAllDay,
       startAt,
       endAt,
+      startAtRaw,
+      endAtRaw,
       startWeekday,
       endWeekday,
       dateInputType,
