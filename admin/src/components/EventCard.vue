@@ -1,7 +1,7 @@
 <template>
   <v-card :to="`/events/${event.id}`">
     <v-card-title class="d-flex align-center">
-      <v-chip class="mr-2" size="small">{{ event.calendar_detail_id }}</v-chip>
+      <v-chip class="mr-2" size="small">{{ convertCalendarName }}</v-chip>
       <h4>{{ event.summary }}</h4>
     </v-card-title>
     <v-card-text>
@@ -22,6 +22,10 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 
+import { useCalendarStore } from '@/stores/calendar'
+
+import type { Calendar } from '@/types/calendar'
+
 export default defineComponent({
   props: {
     event: {
@@ -32,6 +36,17 @@ export default defineComponent({
   setup(props) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
+
+
+    const calendarStore = useCalendarStore();
+    const calendars = calendarStore.calendars;
+
+    const convertCalendarName = computed(() => {
+      const calendar = calendars.find((calendar: Calendar) => {
+        return calendar.id === props.event.calendar_detail_id
+      });
+      return calendar ? calendar.name : '-'
+    })
 
     const formatDateTime = computed(() => {
       const startAtDate = dayjs(props.event.start_at).tz('Asia/Tokyo').format('YYYY-MM-DD')
@@ -59,6 +74,7 @@ export default defineComponent({
 
     return {
       formatDateTime,
+      convertCalendarName,
       formatLine
     }
   },

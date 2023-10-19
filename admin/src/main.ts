@@ -13,6 +13,9 @@ import '@mdi/font/css/materialdesignicons.css'
 
 const app = createApp(App)
 
+import { createPinia } from 'pinia'
+app.use(createPinia())
+
 app.provide('$route', router.currentRoute)
 app.provide('$router', router)
 
