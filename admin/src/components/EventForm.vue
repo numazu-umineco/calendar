@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form @submit.prevent="submit">
+    <v-form @submit.prevent="submit" ref="form">
       <v-card>
         <v-card-text>
           <v-overlay
@@ -105,15 +105,12 @@
             </div>
           </div>
 
-          {{ startAtRaw.format() }}
-
           <v-textarea
             v-model="description"
             label="イベントの詳細"
             :rules="requiredRules"
             variant="outlined"
             density="compact"
-            required
             class="mb-2"
           ></v-textarea>
 
@@ -144,12 +141,12 @@
           </div>
         </v-card-text>
       </v-card>
-    </form>
+    </v-form>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch, type Ref } from 'vue'
+import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -158,6 +155,7 @@ import axios from 'axios'
 
 import type { Calendar } from '@/types/calendar'
 import type { Event } from '@/types/event'
+import type { VForm } from '@/types/vuteify'
 
 export default defineComponent({
   setup() {
@@ -175,9 +173,9 @@ export default defineComponent({
     const url = ref('');
     const location = ref('');
     const isAllDay = ref(true);
-    const startAtRaw = ref(dayjs().startOf('day')) as Ref<dayjs.Dayjs>;
-    const endAtRaw = ref(dayjs().startOf('day')) as Ref<dayjs.Dayjs>;
-    const calendars = ref([]) as Ref<Array<Calendar>>;
+    const startAtRaw = ref<dayjs.Dayjs>(dayjs().startOf('day'));
+    const endAtRaw = ref<dayjs.Dayjs>(dayjs().startOf('day'));
+    const calendars = ref<Array<Calendar>>([]);
     const calendarId = ref(null);
 
     const startAt = computed({
@@ -252,7 +250,20 @@ export default defineComponent({
       endAtRaw.value = dayjs().hour(0).minute(0);
     };
 
+    const eventDescription = computed(() => {
+      if (url.value === '') {
+        return description.value;
+      }
+      return `${description.value}\n\n[Source] ${url.value}`;
+    });
+
+    const form = ref({} as VForm);
+
     const submit = async () => {
+      if (!form.value) return;
+      const { valid } = await form.value.validate();
+      if (!valid) return;
+
       completed.value = false;
       loading.value = true;
       errorMessage.value = '';
@@ -262,7 +273,7 @@ export default defineComponent({
           calendar_event: {
             calendar_id: calendarId.value,
             summary: summary.value,
-            description: `${description.value}\n\n【情報元】${url.value}`,
+            description: eventDescription.value,
             location: location.value,
             all_day: isAllDay.value,
             start_at: startAtRaw.value.format(),
@@ -309,6 +320,7 @@ export default defineComponent({
       isAllDay,
       startAt,
       endAt,
+      form,
       startAtRaw,
       endAtRaw,
       startWeekday,
@@ -316,7 +328,7 @@ export default defineComponent({
       dateInputType,
       requiredRules,
       submit,
-      clear
+      clear,
     }
   },
 })

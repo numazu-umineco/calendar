@@ -14,7 +14,7 @@
         />
       </div>
       <div v-else v-for="event in events" :key="event.id" class="mb-2">
-        <EventCard :event="event" />
+        <EventCard :event="event" :to="`/events/${event.id}`" />
       </div>
     </div>
   </div>
@@ -38,8 +38,8 @@ export default defineComponent({
   },
   setup() {
     const loading = ref(true);
-    const calendars = ref([]) as Ref<Array<Calendar>>;
-    const events = ref([]) as Ref<Array<Event>>;
+    const calendars = ref<Array<Calendar>>([]);
+    const events = ref<Array<Event>>([]);
 
     const calendarStore = useCalendarStore();
 
