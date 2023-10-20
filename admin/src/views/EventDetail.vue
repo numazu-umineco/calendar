@@ -30,12 +30,16 @@
         </div>
       </v-card-text>
     </v-card>
+    <DeleteConfirm :id="id" @deleted="moveTop">
+      イベントを削除
+    </DeleteConfirm>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed } from 'vue'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 import type { Event } from '@/types/event'
 import type { Calendar } from '@/types/calendar'
@@ -44,11 +48,13 @@ import { useCalendarStore } from '@/stores/calendar'
 
 import PeriodTime from '@/components/PeriodTime.vue'
 import EventDetail from '@/components/EventDetail.vue'
+import DeleteConfirm from '@/components/DeleteConfirm.vue'
 
 export default defineComponent({
   components: {
     PeriodTime,
     EventDetail,
+    DeleteConfirm,
   },
   props: {
     id: {
@@ -75,9 +81,15 @@ export default defineComponent({
       return calendar ? calendar.name : '-'
     })
 
+    const router = useRouter();
+    const moveTop = () => {
+      router.push('/');
+    }
+
     return {
       event,
       calendarName,
+      moveTop,
     }
   },
 })
