@@ -5,31 +5,8 @@
       <v-btn variant="outlined" color="blue" prepend-icon="mdi-arrow-left" to="/">トップ</v-btn>
     </div>
 
-    <v-card>
-      <v-card-text>
-        <h2 class="mb-3">{{ event.summary }}</h2>
+    <EventCard :event="event" class="mb-5"></EventCard>
 
-
-        <div class="mb-3">
-          <div class="mb-1">
-            <v-icon icon="mdi-calendar"></v-icon>
-            <span>{{ calendarName }}</span>
-          </div>
-          <div class="mb-1">
-            <v-icon icon="mdi-clock"></v-icon>
-            <PeriodTime :start-at="event.start_at" :end-at="event.end_at" :is-all-day="event.all_day" />
-          </div>
-          <div class="mb-1">
-            <v-icon icon="mdi-map-marker"/>
-            <span>{{ event.location || '(未記入)'}}</span>
-          </div>
-        </div>
-
-        <div>
-          <EventDetail :detail="event.description" />
-        </div>
-      </v-card-text>
-    </v-card>
     <DeleteConfirm :id="id" @deleted="moveTop">
       イベントを削除
     </DeleteConfirm>
@@ -49,12 +26,14 @@ import { useCalendarStore } from '@/stores/calendar'
 import PeriodTime from '@/components/PeriodTime.vue'
 import EventDetail from '@/components/EventDetail.vue'
 import DeleteConfirm from '@/components/DeleteConfirm.vue'
+import EventCard from '@/components/EventCard.vue'
 
 export default defineComponent({
   components: {
     PeriodTime,
     EventDetail,
     DeleteConfirm,
+    EventCard,
   },
   props: {
     id: {

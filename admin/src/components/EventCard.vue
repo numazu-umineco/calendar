@@ -1,16 +1,22 @@
 <template>
-  <v-card :to="`/events/${event.id}`">
+  <v-card>
     <v-card-title class="d-flex align-center">
-      <v-chip class="mr-2" size="small">{{ convertCalendarName }}</v-chip>
       <h4>{{ event.summary }}</h4>
     </v-card-title>
     <v-card-text>
-      <div class="mb-1">
-        <v-icon icon="mdi-calendar" />
-        <PeriodTime :start-at="event.start_at" :end-at="event.end_at" :is-all-day="event.all_day"></PeriodTime>
-      </div>
-      <div class="mb-1">
-        <v-icon icon="mdi-map-marker"/> {{ event.location || '(未記入)'}}
+      <div class="mb-2">
+        <div class="mb-1">
+          <v-icon icon="mdi-calendar" class="mr-1" />
+          <span>{{ convertCalendarName }}</span>
+        </div>
+        <div class="mb-1">
+          <v-icon icon="mdi-clock" class="mr-1" />
+          <PeriodTime :start-at="event.start_at" :end-at="event.end_at" :is-all-day="event.all_day"></PeriodTime>
+        </div>
+        <div class="mb-1">
+          <v-icon icon="mdi-map-marker" class="mr-1" />
+          <span>{{ event.location || '(未記入)' }}</span>
+        </div>
       </div>
       <EventDetail :detail="event.description" />
     </v-card-text>

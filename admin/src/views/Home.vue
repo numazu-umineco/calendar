@@ -14,7 +14,7 @@
         />
       </div>
       <div v-else v-for="event in events" :key="event.id" class="mb-2">
-        <EventCard :event="event" />
+        <EventCard :event="event" :to="`/events/${event.id}`" />
       </div>
     </div>
   </div>
