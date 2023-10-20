@@ -4,7 +4,7 @@
       <slot />
     </v-btn>
 
-    <v-dialog v-model="dialog" width="500">
+    <v-dialog v-model="dialog" width="500" persistent>
       <v-card class="py-5">
         <div v-if="confirmMode">
           <v-card-text>
