@@ -5,7 +5,7 @@ import axios from 'axios'
 import type { Calendar } from '@/types/calendar'
 
 export const useCalendarStore = defineStore('calendar', () => {
-  const calendars = ref([]) as Ref<Array<Calendar>>;
+  const calendars = ref<Array<Calendar>>([]);
 
   const fetchData = async () => {
     try {

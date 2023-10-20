@@ -6,27 +6,32 @@
     </v-card-title>
     <v-card-text>
       <div class="mb-1">
-        <v-icon icon="mdi-calendar" /> {{ formatDateTime }}
+        <v-icon icon="mdi-calendar" />
+        <PeriodTime :start-at="event.start_at" :end-at="event.end_at" :is-all-day="event.all_day"></PeriodTime>
       </div>
       <div class="mb-1">
         <v-icon icon="mdi-map-marker"/> {{ event.location || '(未記入)'}}
       </div>
-      <div v-html="formatLine(event.description)" />
+      <EventDetail :detail="event.description" />
     </v-card-text>
   </v-card>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed } from 'vue'
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
-import timezone from 'dayjs/plugin/timezone'
 
 import { useCalendarStore } from '@/stores/calendar'
 
 import type { Calendar } from '@/types/calendar'
 
+import PeriodTime from '@/components/PeriodTime.vue'
+import EventDetail from '@/components/EventDetail.vue'
+
 export default defineComponent({
+  components: {
+    PeriodTime,
+    EventDetail,
+  },
   props: {
     event: {
       type: Object,
@@ -34,10 +39,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    dayjs.extend(utc);
-    dayjs.extend(timezone);
-
-
     const calendarStore = useCalendarStore();
     const calendars = calendarStore.calendars;
 
@@ -48,32 +49,11 @@ export default defineComponent({
       return calendar ? calendar.name : '-'
     })
 
-    const formatDateTime = computed(() => {
-      const startAtDate = dayjs(props.event.start_at).tz('Asia/Tokyo').format('YYYY-MM-DD')
-      const startAtTime = dayjs(props.event.start_at).tz('Asia/Tokyo').format('HH:mm')
-      const endAtDate = dayjs(props.event.end_at).tz('Asia/Tokyo').format('YYYY-MM-DD')
-      const endAtTime = dayjs(props.event.end_at).tz('Asia/Tokyo').format('HH:mm')
-
-      if (props.event.all_day && startAtDate === endAtDate) {
-        return `${startAtDate}`
-      }
-      if (props.event.all_day) {
-
-        return `${startAtDate} - ${endAtDate}`
-      }
-      // start_at と end_at が同じ日付の場合は日付の表示をまとめて時間の表示だけをする
-      if (startAtDate === endAtDate && startAtTime !== endAtTime) {
-        return `${startAtDate} ${startAtTime} - ${endAtTime}`
-      }
-      return `${startAtDate} ${startAtTime} - ${endAtDate} ${endAtTime}`
-    });
-
     const formatLine = (str: string) => {
       return str.replace(/\n/g, '<br />')
     };
 
     return {
-      formatDateTime,
       convertCalendarName,
       formatLine
     }

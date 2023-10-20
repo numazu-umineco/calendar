@@ -6,7 +6,7 @@ export interface Event {
   latitude: number;
   longtitude: number;
   location: string;
-  startAt: Date;
-  endAt: Date;
+  start_at: string;
+  end_at: string;
   all_day: boolean;
 }
