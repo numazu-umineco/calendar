@@ -2,6 +2,8 @@ FROM ruby:3.2.2
 
 WORKDIR /rails
 
+COPY --from=litestream/litestream:latest /usr/local/bin/litestream /bin/litestream
+
 COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 RUN bundle -j4
