@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { type Ref, ref } from 'vue'
+import { ref } from 'vue'
 import axios from 'axios'
 
 import type { Calendar } from '@/types/calendar'
