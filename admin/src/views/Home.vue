@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, type Ref } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import axios from 'axios'
 
 import type { Event } from '@/types/event'

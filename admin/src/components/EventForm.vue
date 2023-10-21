@@ -155,7 +155,7 @@ import axios from 'axios'
 
 import type { Calendar } from '@/types/calendar'
 import type { Event } from '@/types/event'
-import type { VForm } from '@/types/vuteify'
+import type { VForm } from '@/types/vuetify'
 
 export default defineComponent({
   setup() {
