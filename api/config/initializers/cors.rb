@@ -8,11 +8,9 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   if Rails.env.development?
     allow do
-      origins /\Ahttps?:\/\/localhost(:\d+)?\z/, /https?:\/\/127\.0\.0\.1(:\d+)?\z/
+      origins %r{\Ahttps?://localhost(:\d+)?\z}, %r{https?://127\.0\.0\.1(:\d+)?\z}
 
-      resource "*",
-        headers: :any,
-        methods: [:get, :post, :put, :patch, :delete, :options, :head]
+      resource '*', headers: :any, methods: [:get, :post, :put, :patch, :delete, :options, :head]
     end
   end
 end

@@ -70,6 +70,6 @@ Rails.application.configure do
 
   config.hosts = [
     /localhost(:\d+)?/,
-    "api:3000"
+    'api:3000'
   ]
 end
