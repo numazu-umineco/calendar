@@ -30,6 +30,7 @@ services:
     environment:
       LITESTREAM_ACCESS_KEY_ID: ${MINIO_ACCSES_KEY_ID}
       LITESTREAM_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
+      TZ: Asia/Tokyo
     ports:
       - '3000:3000'
     depends_on:
