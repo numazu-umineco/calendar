@@ -1,4 +1,8 @@
-#!/bin/bash -xe
+#!/bin/bash -e
 
-litestream restore -if-replica-exists -if-db-not-exists -config /rails/litestream.yml /rails/db/litestream/database.sqlite3
-exec litestream replicate -exec "$*" -config /rails/litestream.yml
+if [ "${DISABLE_LITESTREAM}" != "" ] || [ "${RAILS_ENV}" = "test" ]; then
+  exec "$@"
+else
+  litestream restore -if-replica-exists -if-db-not-exists -config /rails/litestream.yml /rails/db/litestream/database.sqlite3
+  exec litestream replicate -exec "$*" -config /rails/litestream.yml
+fi
