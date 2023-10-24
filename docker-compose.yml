@@ -24,13 +24,13 @@ services:
     volumes:
       - ./api:/rails
     tmpfs:
-      - /rails/db/litestream
+      - /rails/db/litestream:size=100M
     env_file:
       - ./api/.env
     environment:
-      LITESTREAM_ACCESS_KEY_ID: ${MINIO_ACCSES_KEY_ID}
-      LITESTREAM_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
       TZ: Asia/Tokyo
+      AWS_ACCESS_KEY_ID: ${MINIO_ACCSES_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
     ports:
       - '3000:3000'
     depends_on:
@@ -57,7 +57,6 @@ services:
 volumes:
   node_modules:
   miniostorage:
-  database:
 
 networks:
   default:
