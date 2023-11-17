@@ -2,7 +2,9 @@ class Admin::Calendar::EventsController < Admin::Calendar::BaseController
   before_action :set_calendar_event, only: %i[show update destroy]
 
   def index
-    @events = Calendar::Event.kept
+    start_at = fetch_start_at(params[:start_at])
+    end_at = fetch_end_at(params[:end_at], start_at)
+    @events = Calendar::Event.kept.where(start_at: start_at..end_at)
 
     render json: @events
   end
@@ -40,6 +42,18 @@ class Admin::Calendar::EventsController < Admin::Calendar::BaseController
   end
 
   private
+
+  def fetch_start_at(date)
+    return DateTime.parse(params[:start_at]) if date.present?
+
+    Time.zone.today.beginning_of_day
+  end
+
+  def fetch_end_at(date, start_at)
+    return DateTime.parse(params[:end_at]) if date.present?
+
+    30.days.since(start_at).end_of_day
+  end
 
   def set_calendar_event
     @event = Calendar::Event.kept.find(params[:id])
