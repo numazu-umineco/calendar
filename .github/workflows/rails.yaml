@@ -1,0 +1,54 @@
+name: Rails CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  rubocop:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - '3.2'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          working-directory: api
+          bundler-cache: true
+
+      - name: Rubocop
+        working-directory: api
+        run: bundle exec rubocop
+
+  spec:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby:
+          - '3.2'
+    env:
+      RAILS_ENV: test
+      RACK_ENV: test
+      DATABASE_URL: sqlite3:db/test.sqlite3
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          working-directory: api
+          bundler-cache: true
+
+      - name: Rubocop
+        working-directory: api
+        run: bundle exec rake test

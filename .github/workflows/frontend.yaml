@@ -1,0 +1,29 @@
+name: Frontend CI
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  admin_build:
+    name: admin Build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node:
+          - '18.x'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - working-directory: admin
+        run: npm install
+
+      - working-directory: admin
+        run: npm run build
