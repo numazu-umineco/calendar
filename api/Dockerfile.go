@@ -8,18 +8,19 @@ COPY Gemfile Gemfile
 COPY Gemfile.lock Gemfile.lock
 RUN bundle -j4
 COPY . .
+RUN bundle exec rails db:migrate:reset db:seed
 
-RUN bundle exec rake db:migrate
-
-FROM golang:1.21.4 as builder
+FROM golang:alpine as builder
 WORKDIR /app
 COPY --from=sql-migrator /rails/database.sqlite3 /app/database.sqlite3
-
 COPY v2 /app
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/app
+RUN apk add --no-cache gcc musl-dev
+RUN CGO_ENABLED=1 GOOS=linux go build -o /app/app
 
-FROM scratch
+FROM alpine
 WORKDIR /
 COPY --from=builder /app/app /app
+COPY --from=builder /app/database.sqlite3 /database.sqlite3
+RUN apk add --no-cache gcc musl-dev
 EXPOSE 3000
 CMD ["./app"]
