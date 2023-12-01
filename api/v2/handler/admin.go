@@ -9,6 +9,15 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+type CalendarDetailParams struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type CalendarDetailRequest struct {
+	CalendarEvent CalendarDetailParams `json:"calendar_detail"`
+}
+
 func AdminCalendarDetails(c echo.Context) error {
 	cals := fetchAllCalendars()
 	return c.JSON(http.StatusOK, cals)
@@ -34,6 +43,8 @@ func AdminCalendarDetailUpdate(c echo.Context) error {
 func AdminCalendarDetailDelete(c echo.Context) error {
 	id := c.Param("id")
 	cal := fetchCalendar(id)
+	db := db.Conn()
+	db.Delete(&cal)
 	return c.JSON(http.StatusOK, cal)
 }
 
@@ -48,7 +59,7 @@ func AdminCalendarEvent(c echo.Context) error {
 	return c.JSON(http.StatusOK, event)
 }
 
-type CalendarEvent struct {
+type CalendarEventParams struct {
 	CalendarID  string `json:"calendar_id"`
 	Summary     string `json:"summary"`
 	Description string `json:"description"`
@@ -59,7 +70,7 @@ type CalendarEvent struct {
 }
 
 type CalendarEventRequest struct {
-	CalendarEvent CalendarEvent `json:"calendar_event"`
+	CalendarEvent CalendarEventParams `json:"calendar_event"`
 }
 
 func AdminCalendarEventCreate(c echo.Context) error {
@@ -112,7 +123,6 @@ func AdminCalendarEventUpdate(c echo.Context) error {
 func AdminCalendarEventDelete(c echo.Context) error {
 	id := c.Param("id")
 	event := fetchEvent(id)
-	fmt.Println(event)
 	db := db.Conn()
 	db.Delete(&event)
 	return c.JSON(http.StatusOK, event)
