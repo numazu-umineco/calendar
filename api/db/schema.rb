@@ -11,14 +11,6 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2023_10_15_084009) do
-  create_table "_litestream_lock", id: false, force: :cascade do |t|
-    t.integer "id"
-  end
-
-  create_table "_litestream_seq", force: :cascade do |t|
-    t.integer "seq"
-  end
-
   create_table "calendar_details", id: :string, force: :cascade do |t|
     t.string "name", null: false
     t.datetime "discarded_at"
