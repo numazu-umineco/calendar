@@ -44,6 +44,15 @@ services:
     environment:
       - MINIO_ACCESS_KEY_ID
       - MINIO_SECRET_ACCESS_KEY
+  storage_ctl:
+    image: minio/mc:latest
+    volumes:
+      - ./storage-setup.sh:/storage-setup.sh:ro
+    environment:
+      - MINIO_ACCESS_KEY_ID
+      - MINIO_SECRET_ACCESS_KEY
+    # docker-compose run から動かすことを想定しているので何もしない
+    entrypoint: ["/bin/sh"]
 
 volumes:
   node_modules:
