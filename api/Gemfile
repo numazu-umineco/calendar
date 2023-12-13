@@ -62,3 +62,4 @@ end
 gem 'discard'
 gem 'pry-rails'
 gem 'icalendar'
+gem 'aws-sdk-s3', '~> 1'
