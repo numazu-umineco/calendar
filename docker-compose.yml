@@ -31,6 +31,7 @@ services:
       TZ: Asia/Tokyo
       AWS_ACCESS_KEY_ID: ${MINIO_ACCSES_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
+      DATABASE_URL: sqlite3:db/litestream/database.sqlite3
     ports:
       - '3000:3000'
   storage:
@@ -51,6 +52,7 @@ services:
     environment:
       - MINIO_ACCESS_KEY_ID
       - MINIO_SECRET_ACCESS_KEY
+    env_file: .env
     # docker-compose run から動かすことを想定しているので何もしない
     entrypoint: ["/bin/sh"]
 
