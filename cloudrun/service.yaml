@@ -1,0 +1,85 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: calendar
+  labels:
+    cloud.googleapis.com/location: us-west1
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+
+spec:
+  template:
+    metadata:
+      annotations:
+        run.googleapis.com/container-dependencies: "{admin: [api]}"
+
+    spec:
+      containers:
+        - name: admin
+          image: windyakin/umineco-calendar-admin:0.1.5
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 128Mi
+          startupProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: 80
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 10
+        - name: oauth2-proxy
+          image: bitnami/oauth2-proxy:7.5.1
+          resources:
+            limits:
+              cpu: "0.5"
+              memory: 128Mi
+          command:
+            - /opt/bitnami/oauth2-proxy/bin/oauth2-proxy
+            - --config=/mnt/oauth2-proxy-config/oauth2-proxy.cfg
+          volumeMounts:
+            - name: oauth2-proxy-config
+              mountPath: /mnt/oauth2-proxy-config
+        - name: api
+          image: windyakin/umineco-calendar-api:0.1.5
+          resources:
+            limits:
+              cpu: "1.0"
+              memory: 256Mi
+          env:
+            - name: RAILS_ENV
+              value: production
+            - name: RAILS_LOG_TO_STDOUT
+              value: "true"
+            - name: RAILS_SERVE_STATIC_FILES
+              value: "true"
+            - name: RAILS_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rails_master_key
+                  key: latest
+          volumeMounts:
+            - name: litestream-config
+              mountPath: /rails/litestream
+          startupProbe:
+            httpGet:
+              path: /public/healthcheck
+              port: 3000
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 10
+      volumes:
+        - name: litestream-config
+          secret:
+            secretName: umineco-calendar-litestream
+            items:
+              - key: latest
+                path: config.yml
+        - name: oauth2-proxy-config
+          secret:
+            secretName: umineco-calendar-oauth2-proxy
+            items:
+              - key: latest
+                path: oauth2-proxy.cfg
