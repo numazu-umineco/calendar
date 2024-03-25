@@ -1,8 +1,9 @@
 Rails.application.routes.draw do
   get 'up' => 'rails/health#show', as: :rails_health_check
+  get 'public/healthcheck', to: 'healthcheck#show'
+  get 'admin/healthcheck', to: 'healthcheck#show'
 
   namespace :public do
-    get 'health/alive', to: 'health#alive'
     namespace :calendar do
       get :all
       get 'download/:id', action: :download

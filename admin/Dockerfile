@@ -12,4 +12,6 @@ RUN npm run build
 
 FROM nginx:1.24
 
+COPY nginx/production/default.conf /etc/nginx/conf.d/default.conf
+COPY nginx/production/upstream.conf /etc/nginx/conf.d/upstream.conf
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html

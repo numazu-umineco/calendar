@@ -1,8 +1,14 @@
-.PHONY: setup
+.PHONY: setup setup/container setup/storage setup/database
 
-setup:
+setup: setup/container setup/storage setup/database
+
+setup/container:
 	docker-compose build
 	docker-compose run --rm admin npm install
+
+setup/storage:
 	docker-compose up -d storage
-	docker run --rm --network calendar --env-file ${CURDIR}/.env -v $(CURDIR)/storage-setup.sh:/storage-setup.sh --entrypoint "/storage-setup.sh" minio/mc:latest
+	docker-compose run --rm storage_ctl /storage-setup.sh
+
+setup/database:
 	docker-compose run --rm api bundle exec rails db:create db:migrate db:seed
