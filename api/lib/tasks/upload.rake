@@ -15,7 +15,7 @@ namespace :upload do
   task storage: :environment do
     Rake::Task['export:ical'].invoke
     Rake::Task['export:json'].invoke
-    upload('tmp/export/*.json', upload_dir: 'api/json')
-    upload('tmp/export/*.ics', upload_dir: 'api/ics')
+    upload('tmp/export/*.json', upload_dir: '')
+    upload('tmp/export/*.ics', upload_dir: '')
   end
 end
