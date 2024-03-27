@@ -15,4 +15,5 @@ while true; do
     echo "Waiting for storage to be ready..."
     sleep 1
 done
-mc mb --with-lock storage/database  > /dev/null 2>&1 || echo "Bucket "database" is already exists, ignoring error"
+mc mb --with-lock storage/database > /dev/null 2>&1 || echo "Bucket "database" is already exists, ignoring error"
+mc mb --with-lock storage/umineco-calendar > /dev/null 2>&1 || echo "Bucket "umineco-calendar" is already exists, ignoring error"
