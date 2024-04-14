@@ -7,7 +7,7 @@ def upload(dir)
   Dir.glob(dir) do |path|
     file = File.open(path)
     filename = File.basename(path)
-    storage.upload(file: file, object_key: "#{filename}")
+    storage.upload(file: file, object_key: filename)
   end
 end
 
