@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: admin
-          image: windyakin/umineco-calendar-admin:0.2.0
+          image: windyakin/umineco-calendar-admin:0.2.1
           ports:
             - containerPort: 80
           resources:
@@ -43,7 +43,7 @@ spec:
             - name: oauth2-proxy-config
               mountPath: /mnt/oauth2-proxy-config
         - name: api
-          image: windyakin/umineco-calendar-api:0.2.0
+          image: windyakin/umineco-calendar-api:0.2.1
           resources:
             limits:
               cpu: "1.0"
