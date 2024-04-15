@@ -1,0 +1,69 @@
+apiVersion: run.googleapis.com/v1
+kind: Job
+metadata:
+  name: calendar-cron
+  labels:
+    cloud.googleapis.com/location: us-west1
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+
+spec:
+  template:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: api
+              image: windyakin/umineco-calendar-api:0.2.1
+              command:
+                - /rails/docker-entrypoint.sh
+                - "bundle exec rake upload:storage"
+              env:
+                - name: TZ
+                  value: Asia/Tokyo
+                - name: RAILS_ENV
+                  value: production
+                - name: RAILS_LOG_TO_STDOUT
+                  value: "true"
+                - name: RAILS_SERVE_STATIC_FILES
+                  value: "true"
+                - name: RAILS_MASTER_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: rails_master_key
+                      key: latest
+                - name: STORAGE_REGION
+                  value: us-east-1
+                - name: STORAGE_BUCKET_NAME
+                  value: umineco-calendar
+                - name: STORAGE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: umineco-calendar-r2-access-key-id
+                      key: latest
+                - name: STORAGE_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: umineco-calendar-r2-secret-access-key
+                      key: latest
+                - name: STORAGE_ENDPOINT
+                  valueFrom:
+                    secretKeyRef:
+                      name: umineco-calendar-r2-endpint-url
+                      key: latest
+              volumeMounts:
+                - name: litestream-config
+                  mountPath: /rails/litestream
+          volumes:
+            - name: litestream-config
+              secret:
+                secretName: umineco-calendar-litestream
+                items:
+                  - key: latest
+                    path: config.yml
+            - name: oauth2-proxy-config
+              secret:
+                secretName: umineco-calendar-oauth2-proxy
+                items:
+                  - key: latest
+                    path: oauth2-proxy.cfg
