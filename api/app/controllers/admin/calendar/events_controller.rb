@@ -4,8 +4,7 @@ class Admin::Calendar::EventsController < Admin::Calendar::BaseController
   def index
     start_at = fetch_start_at(params[:start_at])
     end_at = fetch_end_at(params[:end_at], start_at)
-    @events = Calendar::Event.kept.where(start_at: start_at..end_at)
-
+    @events = Calendar::Event.kept.where(start_at: start_at..end_at).order(start_at: :desc)
     render json: @events
   end
 
