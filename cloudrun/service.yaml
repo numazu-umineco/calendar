@@ -49,6 +49,8 @@ spec:
               cpu: "1.0"
               memory: 256Mi
           env:
+            - name: TZ
+              value: Asia/Tokyo
             - name: RAILS_ENV
               value: production
             - name: RAILS_LOG_TO_STDOUT
