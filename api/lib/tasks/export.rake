@@ -5,7 +5,7 @@ namespace :export do
     export_dir = 'tmp/export'
     FileUtils.mkdir_p(export_dir)
     Calendar::Detail.kept.each do |calendar|
-      events = calendar.events.where(start_at: [3.months.ago..1.year.since])
+      events = calendar.events.where(start_at: [3.months.ago..1.year.since]).order(:start_at)
       cal = Icalendar::Calendar.new
       events.each do |event|
         if event.end_at - events.start_at > 4.days
@@ -34,7 +34,7 @@ namespace :export do
     export_dir = 'tmp/export'
     FileUtils.mkdir_p(export_dir)
     Calendar::Detail.kept.each do |calendar|
-      events = calendar.events.where(start_at: [3.months.ago..1.year.since])
+      events = calendar.events.where(start_at: [3.months.ago..1.year.since]).order(:start_at)
       File.open("#{export_dir}/#{calendar.id}.json", 'w') do |f|
         f.puts events.to_json
       end
