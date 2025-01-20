@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS calendar_events (
        created_at datetime(6) NOT NULL,
        updated_at datetime(6) NOT NULL,
        all_day boolean DEFAULT 0 NOT NULL,
+       url text,
        CONSTRAINT 'fk_rails_f5ef1ec5eb'
        FOREIGN KEY ('calendar_detail_id')
        REFERENCES 'calendar_details' ('id')
