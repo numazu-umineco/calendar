@@ -12,8 +12,7 @@ pub struct CalendarEvent {
     pub latitude: f64,
     pub longitude: f64,
     pub all_day: bool,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub url: Option<String>,
 }
 
 impl CalendarEvent {
@@ -27,8 +26,8 @@ impl CalendarEvent {
         latitude: f64,
         longitude: f64,
         all_day: bool,
+        url: Option<String>,
     ) -> CalendarEvent {
-        let now = Utc::now();
         CalendarEvent {
             id,
             summary,
@@ -39,23 +38,39 @@ impl CalendarEvent {
             latitude,
             longitude,
             all_day,
-            created_at: now,
-            updated_at: now,
+            url,
         }
     }
+}
 
-    pub fn to_ical(&self) -> Event {
-        Event::new()
-            .summary(&self.summary.clone())
-            .description(&self.description.clone())
-            .starts(CalendarDateTime::ne(&self.start))
-            .ends(CalendarDateTime::ne(&self.end))
-            .class(Class::Public)
-            .location(&self.location.clone())
-            .done()
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use chrono::Utc;
+
+    #[test]
+    fn test_new_calendar_event() {
+        let event = CalendarEvent::new(
+            1,
+            "Test Event".to_string(),
+            "Description".to_string(),
+            "Location".to_string(),
+            Utc::now(),
+            Utc::now(),
+            0.0,
+            0.0,
+            false,
+            None,
+        );
+        assert_eq!(event.id, 1);
+        assert_eq!(event.summary, "Test Event");
+        assert_eq!(event.description, "Description");
+        assert_eq!(event.location, "Location");
+        assert_eq!(event.latitude, 0.0);
+        assert_eq!(event.longitude, 0.0);
+        assert!(!event.all_day);
+        assert!(event.url.is_none());
     }
 
-    pub fn geo(&self) -> String {
-        format!("{};{}", self.latitude, self.longitude)
-    }
+    // 他のテストを追加する場合はここに書きます
 }
