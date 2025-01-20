@@ -1,7 +1,7 @@
 use chrono::{DateTime, Utc};
 use icalendar::{Calendar, CalendarDateTime, Class, Component, Event, EventLike, Property, Todo};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CalendarEvent {
     pub id: i32,
     pub summary: String,

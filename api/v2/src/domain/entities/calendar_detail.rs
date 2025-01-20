@@ -2,16 +2,16 @@ use crate::domain::entities::calendar_event::CalendarEvent;
 use chrono::{DateTime, Utc};
 use icalendar::{Calendar, CalendarDateTime, Class, Event, EventLike, Property, Todo};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CalendarDetail {
-    pub id: i32,
+    pub id: String,
     pub name: String,
     pub discarded_at: Option<DateTime<Utc>>,
     pub events: Vec<CalendarEvent>,
 }
 
 impl CalendarDetail {
-    pub fn new(id: i32, name: String) -> CalendarDetail {
+    pub fn new(id: String, name: String) -> CalendarDetail {
         CalendarDetail {
             id,
             name,
