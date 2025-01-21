@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <v-btn color="error" @click="openDialog">
+  <span>
+    <v-btn variant="flat" color="error" @click="openDialog">
       <slot />
     </v-btn>
 
@@ -41,7 +41,7 @@
         </div>
       </v-card>
     </v-dialog>
-  </div>
+  </span>
 </template>
 
 <script lang="ts">

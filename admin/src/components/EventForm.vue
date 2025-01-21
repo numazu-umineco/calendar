@@ -146,7 +146,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch } from 'vue'
+import { defineComponent, ref, computed, onMounted, watch, PropType, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router';
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -158,7 +158,13 @@ import type { Event } from '@/types/event'
 import type { VForm } from '@/types/vuetify'
 
 export default defineComponent({
-  setup() {
+  props: {
+    event: {
+      type: Object as PropType<Event>,
+      default: {} as Event,
+    }
+  },
+  setup(props, { emit }) {
     dayjs.extend(utc);
     dayjs.extend(timezone);
     dayjs.tz.setDefault('Asia/Tokyo');
@@ -168,6 +174,7 @@ export default defineComponent({
     const loading = ref(false);
     const completed = ref(false);
     const errorMessage = ref('');
+    const eventId = ref<number|null>(null);
     const summary = ref('');
     const description = ref('');
     const url = ref('');
@@ -176,7 +183,30 @@ export default defineComponent({
     const startAtRaw = ref<dayjs.Dayjs>(dayjs().startOf('day'));
     const endAtRaw = ref<dayjs.Dayjs>(dayjs().startOf('day'));
     const calendars = ref<Array<Calendar>>([]);
-    const calendarId = ref(null);
+    const calendarId = ref<string|null>(null);
+
+    const updateEvent = (event: Event) => {
+      eventId.value = event.id;
+      summary.value = event.summary;
+      calendarId.value = event.calendar_detail_id;
+      description.value = event.description;
+      location.value = event.location;
+      isAllDay.value = event.all_day;
+      startAtRaw.value = dayjs(event.start_at);
+      endAtRaw.value = dayjs(event.end_at);
+    }
+
+    onMounted(async () => {
+      if (props.event.id) {
+        updateEvent(props.event);
+      }
+    });
+
+    watch(() => props.event, (newEvent) => {
+      if (newEvent.id) {
+        updateEvent(newEvent);1
+      }
+    }, { immediate: true });
 
     const startAt = computed({
       get: () => {
@@ -240,6 +270,7 @@ export default defineComponent({
 
     const clear = () => {
       loading.value = false;
+      eventId.value = null;
       summary.value = '';
       calendarId.value = null;
       description.value = '';
@@ -249,6 +280,8 @@ export default defineComponent({
       startAtRaw.value = dayjs().hour(0).minute(0);
       endAtRaw.value = dayjs().hour(0).minute(0);
     };
+
+    onUnmounted(clear);
 
     const eventDescription = computed(() => {
       if (url.value === '') {
@@ -267,19 +300,28 @@ export default defineComponent({
       completed.value = false;
       loading.value = true;
       errorMessage.value = '';
+      let requestPath = '/api/calendar/events';
       let createdEvent: Event;
+      if (eventId.value) {
+        requestPath = `/api/calendar/events/${eventId.value}`;
+      }
       try {
-        const response = await axios.post('/api/calendar/events', {
-          calendar_event: {
-            calendar_id: calendarId.value,
-            summary: summary.value,
-            description: eventDescription.value,
-            location: location.value,
-            all_day: isAllDay.value,
-            start_at: startAtRaw.value.format(),
-            end_at: endAtRaw.value.format(),
-          }
-        }, { headers: { 'x-user-name': 'admin' } });
+        const response = await axios({
+          url: requestPath,
+          method: eventId.value ? 'put' : 'post',
+          data: {
+            calendar_event: {
+              calendar_id: calendarId.value,
+              summary: summary.value,
+              description: eventDescription.value,
+              location: location.value,
+              all_day: isAllDay.value,
+              start_at: startAtRaw.value.format(),
+              end_at: endAtRaw.value.format(),
+            }
+          },
+          headers: { 'x-user-name': 'admin' }
+        });
         createdEvent = response.data as Event;
       } catch (err: any) {
         console.error(err);
@@ -294,18 +336,17 @@ export default defineComponent({
         setTimeout(() => {
           completed.value = true;
           resolve();
-        }, 1000);
+        }, 500);
       });
       await new Promise<void> ((resolve) => {
         setTimeout(() => {
           loading.value = false;
           router.push(`/events/${createdEvent.id}`);
-          clear();
+          emit('eventSubmitted', createdEvent);
           resolve();
         }, 500);
       });
     };
-
 
     return {
       loading,
