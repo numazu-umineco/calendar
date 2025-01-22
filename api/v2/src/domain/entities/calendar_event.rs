@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 
 #[derive(Debug, Clone)]
 pub struct CalendarEvent {
-    pub id: i32,
+    pub id: String,
     pub summary: String,
     pub description: String,
     pub location: String,
@@ -17,7 +17,7 @@ pub struct CalendarEvent {
 
 impl CalendarEvent {
     pub fn new(
-        id: i32,
+        id: String,
         summary: String,
         description: String,
         location: String,
@@ -53,7 +53,7 @@ mod tests {
     #[test]
     fn test_new_calendar_event() {
         let event = CalendarEvent::new(
-            1,
+            "1".to_string(),
             "summary".to_string(),
             "description".to_string(),
             "Location".to_string(),
@@ -65,7 +65,7 @@ mod tests {
             None,
             "1".to_string(),
         );
-        assert_eq!(event.id, 1);
+        assert_eq!(event.id, "1".to_string());
         assert_eq!(event.summary, "Test Event");
         assert_eq!(event.description, "Description");
         assert_eq!(event.location, "Location");

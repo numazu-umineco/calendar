@@ -60,7 +60,7 @@ mod tests {
     fn test_add_event() {
         let mut calendar = CalendarDetail::new("aaa".to_string(), "Test Calendar".to_string());
         let event = CalendarEvent::new(
-            1,
+            "id".to_string(),
             "Test Event".to_string(),
             "Description".to_string(),
             "Location".to_string(),

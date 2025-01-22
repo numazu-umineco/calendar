@@ -1,6 +1,6 @@
 -- +migrate Up
 CREATE TABLE IF NOT EXISTS calendar_events (
-       id integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+       id varchar(255) PRIMARY KEY NOT NULL,
        summary text NOT NULL,
        description text NOT NULL,
        location text,

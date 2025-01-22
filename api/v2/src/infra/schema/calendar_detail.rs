@@ -1,4 +1,5 @@
 use crate::domain::entities::calendar_detail::CalendarDetail;
+use crate::infra::schema::calendar_event::CalendarEventSchema;
 use chrono::{DateTime, Utc};
 
 #[derive(Debug)]
@@ -8,6 +9,7 @@ pub struct CalendarDetailSchema {
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
     pub discarded_at: Option<DateTime<Utc>>,
+    pub events: Vec<CalendarEventSchema>,
 }
 
 impl CalendarDetailSchema {
@@ -19,6 +21,11 @@ impl CalendarDetailSchema {
             created_at: now,
             updated_at: now,
             discarded_at: entity.discarded_at,
+            events: entity
+                .events
+                .iter()
+                .map(|event| CalendarEventSchema::from_entity(event.clone()))
+                .collect(),
         }
     }
 

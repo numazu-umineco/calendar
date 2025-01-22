@@ -1,8 +1,9 @@
 use crate::domain::entities::calendar_event::CalendarEvent;
 use chrono::{DateTime, Utc};
 
+#[derive(Debug)]
 pub struct CalendarEventSchema {
-    pub id: i32,
+    pub id: String,
     pub summary: String,
     pub description: String,
     pub location: String,
@@ -39,7 +40,7 @@ impl CalendarEventSchema {
 
     pub fn to_entity(&self) -> CalendarEvent {
         CalendarEvent {
-            id: self.id,
+            id: self.id.clone(),
             summary: self.summary.clone(),
             description: self.description.clone(),
             location: self.location.clone(),
@@ -48,7 +49,6 @@ impl CalendarEventSchema {
             latitude: self.latitude,
             longitude: self.longitude,
             all_day: self.all_day,
-
             url: self.url.clone(),
             calendar_id: self.calendar_id.clone(),
         }

@@ -1,14 +1,15 @@
-use std::fs::File;
-use std::io::Write;
-use std::sync::Arc;
+// use std::fs::File;
+// use std::io::Write;
+// use std::sync::Arc;
 
-use crate::domain::entities;
+//use crate::domain::entities;
 use crate::domain::entities::calendar_detail::CalendarDetail;
-use crate::domain::entities::calendar_event::CalendarEvent;
+//use crate::domain::entities::calendar_event::CalendarEvent;
+use crate::infra::repository::db::calendar_event::CalendarEventRepository;
 use crate::infra::schema::calendar_detail::CalendarDetailSchema;
 use chrono::{DateTime, Utc};
-use icalendar::{Calendar, CalendarDateTime, Class, Event, Property, Todo};
-use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ValueRef};
+//use icalendar::{Calendar, CalendarDateTime, Class, Event, Property, Todo};
+//use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ValueRef};
 use rusqlite::{params, Connection, Result};
 
 #[derive(Debug)]
@@ -56,10 +57,29 @@ impl CalendarDetailRepository {
 
     pub fn create_detail(&self, entity: &CalendarDetail) -> Result<usize> {
         let schema = CalendarDetailSchema::from_entity(entity);
-        self.conn.execute(
+        let _ = self.conn.execute(
             "INSERT INTO calendar_details (id, name, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
             params![schema.id, schema.name, schema.created_at.to_rfc3339(), schema.updated_at.to_rfc3339()],
-        )
+        );
+        Ok(0)
+    }
+
+    pub fn create_detail_with_events(
+        &self,
+        entity: &CalendarDetail,
+        event_repository: CalendarEventRepository,
+    ) -> Result<usize> {
+        let schema = CalendarDetailSchema::from_entity(entity);
+        let _= self.conn.execute(
+            "INSERT INTO calendar_details (id, name, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
+            params![schema.id, schema.name, schema.created_at.to_rfc3339(), schema.updated_at.to_rfc3339()],
+        );
+
+        let _ = entity
+            .events
+            .iter()
+            .map(|e| event_repository.create_event(e));
+        Ok(0)
     }
 
     pub fn update_detail(&self, entity: &CalendarDetail) -> Result<usize> {
@@ -89,6 +109,7 @@ impl CalendarDetailRepository {
             created_at: parse_datetime(&created_at)?,
             updated_at: parse_datetime(&updated_at)?,
             discarded_at: discarded_at.map(|d| parse_datetime(&d)).transpose()?,
+            events: vec![],
         })
     }
 }

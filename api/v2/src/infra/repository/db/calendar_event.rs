@@ -42,8 +42,22 @@ impl CalendarEventRepository {
     pub fn create_event(&self, entity: &CalendarEvent) -> Result<usize> {
         let schema = CalendarEventSchema::from_entity(entity.clone());
         self.conn.execute(
-            "INSERT INTO calendar_events (id, summary, start_at, end_at, location, description, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
-            params![schema.id, schema.summary, schema.start_at.to_rfc3339(), schema.end_at.to_rfc3339(), schema.location, schema.description, schema.created_at.to_rfc3339(), schema.updated_at.to_rfc3339()],
+            "INSERT INTO calendar_events (id, summary, description, location, latitude, longitude, start_at, end_at, calendar_detail_id, all_day, url, created_at, updated_at) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13)",
+            params![
+                schema.id,
+                schema.summary,
+                schema.description,
+                schema.location,
+                schema.latitude,
+                schema.longitude,
+                schema.start_at.to_rfc3339(),
+                schema.end_at.to_rfc3339(),
+                schema.calendar_id,
+                schema.all_day,
+                schema.url,
+                schema.created_at.to_rfc3339(),
+                schema.updated_at.to_rfc3339()
+            ],
         )
     }
 
