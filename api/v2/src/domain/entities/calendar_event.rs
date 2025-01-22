@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct CalendarEvent {
@@ -17,7 +18,7 @@ pub struct CalendarEvent {
 
 impl CalendarEvent {
     pub fn new(
-        id: String,
+        id: Option<String>,
         summary: String,
         description: String,
         location: String,
@@ -30,7 +31,7 @@ impl CalendarEvent {
         calendar_id: String,
     ) -> CalendarEvent {
         CalendarEvent {
-            id,
+            id: id.unwrap_or_else(|| Uuid::new_v4().to_string()),
             summary,
             description,
             location,
@@ -53,7 +54,33 @@ mod tests {
     #[test]
     fn test_new_calendar_event() {
         let event = CalendarEvent::new(
+            Some("1".to_string()),
+            "Test Event".to_string(),
+            "Description".to_string(),
+            "Location".to_string(),
+            Utc::now(),
+            Utc::now(),
+            0.0,
+            0.0,
+            false,
+            None,
             "1".to_string(),
+        );
+        assert_eq!(event.id, "1".to_string());
+        assert_eq!(event.summary, "Test Event".to_string());
+        assert_eq!(event.description, "Description".to_string());
+        assert_eq!(event.location, "Location".to_string());
+        assert_eq!(event.latitude, 0.0);
+        assert_eq!(event.longitude, 0.0);
+        assert!(!event.all_day);
+        assert_eq!(event.url, None);
+        assert_eq!(event.calendar_id, "1".to_string());
+    }
+
+    #[test]
+    fn test_new_calendar_event_with_generated_id() {
+        let event = CalendarEvent::new(
+            None,
             "summary".to_string(),
             "description".to_string(),
             "Location".to_string(),
@@ -65,10 +92,10 @@ mod tests {
             None,
             "1".to_string(),
         );
-        assert_eq!(event.id, "1".to_string());
-        assert_eq!(event.summary, "Test Event");
-        assert_eq!(event.description, "Description");
-        assert_eq!(event.location, "Location");
+        assert!(!event.id.is_empty());
+        assert_eq!(event.summary, "summary".to_string());
+        assert_eq!(event.description, "description".to_string());
+        assert_eq!(event.location, "Location".to_string());
         assert_eq!(event.latitude, 0.0);
         assert_eq!(event.longitude, 0.0);
         assert!(!event.all_day);

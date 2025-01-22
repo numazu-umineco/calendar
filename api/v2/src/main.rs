@@ -46,13 +46,10 @@ async fn main() -> std::io::Result<()> {
     let db_path = "db/dev.db";
     let calendar_repo =
         CalendarDetailRepository::new(db_path).expect("Failed to initialize database");
-    let _ = calendar_repo.create_detail(&cal);
 
-    let event_repo = CalendarEventRepository::new(db_path).expect("Failed to initialize database");
-    cal.events.iter().for_each(|e| {
-        let res = event_repo.create_event(e);
-        println!("{:?}", res);
-    });
+    let c = calendar_repo.get_detail_with_events(&cal.id);
+    println!("{:?}", c);
+
     Ok(())
 }
 
