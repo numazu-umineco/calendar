@@ -1,7 +1,8 @@
-use actix_web::{web, Responder};
+use actix_web::{web, HttpResponse, Responder};
+use serde_json::json;
 
 async fn public_health_alive() -> impl Responder {
-    "public_health_alive"
+    HttpResponse::Ok().json(json!({ "status": "success" }))
 }
 
 async fn public_calendar_all() -> impl Responder {

@@ -260,6 +260,7 @@ dependencies = [
  "chrono",
  "icalendar",
  "rusqlite",
+ "serde_json",
 ]
 
 [[package]]
