@@ -1,6 +1,5 @@
 use crate::domain::entities::calendar_event::CalendarEvent;
 use chrono::{DateTime, Utc};
-use icalendar::{Calendar, CalendarDateTime, Class, Event, EventLike, Property, Todo};
 
 #[derive(Debug, Clone)]
 pub struct CalendarDetail {
@@ -43,8 +42,8 @@ mod tests {
 
     #[test]
     fn test_new_calendar_detail() {
-        let calendar = CalendarDetail::new(1, "Test Calendar".to_string());
-        assert_eq!(calendar.id, 1);
+        let calendar = CalendarDetail::new("aaa".to_string(), "Test Calendar".to_string());
+        assert_eq!(calendar.id, "aaa".to_string());
         assert_eq!(calendar.name, "Test Calendar");
         assert!(calendar.discarded_at.is_none());
         assert!(calendar.events.is_empty());
@@ -52,13 +51,14 @@ mod tests {
 
     #[test]
     fn test_discard_calendar_detail() {
-        let calendar = CalendarDetail::new(1, "Test Calendar".to_string()).discard();
+        let calendar =
+            CalendarDetail::new("aaa".to_string(), "Test Calendar".to_string()).discard();
         assert!(calendar.is_discarded());
     }
 
     #[test]
     fn test_add_event() {
-        let mut calendar = CalendarDetail::new(1, "Test Calendar".to_string());
+        let mut calendar = CalendarDetail::new("aaa".to_string(), "Test Calendar".to_string());
         let event = CalendarEvent::new(
             1,
             "Test Event".to_string(),
@@ -70,6 +70,7 @@ mod tests {
             0.0,
             false,
             None,
+            "1".to_string(),
         );
         calendar.add_event(event);
         assert_eq!(calendar.events.len(), 1);

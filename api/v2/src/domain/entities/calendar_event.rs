@@ -1,5 +1,4 @@
 use chrono::{DateTime, Utc};
-use icalendar::{Calendar, CalendarDateTime, Class, Component, Event, EventLike, Property, Todo};
 
 #[derive(Debug, Clone)]
 pub struct CalendarEvent {
@@ -13,6 +12,7 @@ pub struct CalendarEvent {
     pub longitude: f64,
     pub all_day: bool,
     pub url: Option<String>,
+    pub calendar_id: String,
 }
 
 impl CalendarEvent {
@@ -27,6 +27,7 @@ impl CalendarEvent {
         longitude: f64,
         all_day: bool,
         url: Option<String>,
+        calendar_id: String,
     ) -> CalendarEvent {
         CalendarEvent {
             id,
@@ -39,6 +40,7 @@ impl CalendarEvent {
             longitude,
             all_day,
             url,
+            calendar_id,
         }
     }
 }
@@ -52,8 +54,8 @@ mod tests {
     fn test_new_calendar_event() {
         let event = CalendarEvent::new(
             1,
-            "Test Event".to_string(),
-            "Description".to_string(),
+            "summary".to_string(),
+            "description".to_string(),
             "Location".to_string(),
             Utc::now(),
             Utc::now(),
@@ -61,6 +63,7 @@ mod tests {
             0.0,
             false,
             None,
+            "1".to_string(),
         );
         assert_eq!(event.id, 1);
         assert_eq!(event.summary, "Test Event");
@@ -69,7 +72,8 @@ mod tests {
         assert_eq!(event.latitude, 0.0);
         assert_eq!(event.longitude, 0.0);
         assert!(!event.all_day);
-        assert!(event.url.is_none());
+        assert_eq!(event.url, None);
+        assert_eq!(event.calendar_id, "1".to_string());
     }
 
     // 他のテストを追加する場合はここに書きます
