@@ -1,9 +1,11 @@
 use crate::domain::entities::calendar_detail::CalendarDetail;
+use crate::domain::entities::calendar_event::CalendarEvent;
 use crate::infra::exporter::ics::IcsExporter;
 use crate::infra::mappers::calendar_detail_mapper::CalendarDetailMapper;
 use crate::infra::mappers::calendar_event_mapper::CalendarEventMapper;
 use crate::infra::repository::db::calendar_detail::CalendarDetailRepository;
 use crate::infra::repository::db::calendar_event::CalendarEventRepository;
+use crate::use_cases::interfaces::CalendarEventParams;
 use serde_json::Value;
 use uuid::Uuid;
 
@@ -121,5 +123,62 @@ impl CalendarUseCase {
             .map(|event| CalendarEventMapper::to_json(event.to_entity()))
             .collect::<Vec<_>>();
         Ok(Value::Array(json))
+    }
+
+    pub fn create_calendar_event(
+        &self,
+        params: CalendarEventParams,
+    ) -> Result<Value, Box<dyn std::error::Error>> {
+        let repo = CalendarEventRepository::new("db/dev.db")?;
+        let entity = CalendarEvent::new(
+            Some(params.id), // Wrap params.id in Some
+            params.summary,
+            params.description,
+            params.location,
+            params.end_at,
+            params.start_at,
+            params.latitude,
+            params.longitude,
+            params.all_day,
+            params.url,
+            params.calendar_id,
+        );
+        let _ = repo.create_event(&entity)?;
+        let json = CalendarEventMapper::to_json(entity);
+        Ok(json)
+    }
+
+    pub fn update_event(
+        &self,
+        id: String,
+        params: CalendarEventParams,
+    ) -> Result<Value, Box<dyn std::error::Error>> {
+        let repo = CalendarEventRepository::new("db/dev.db")?;
+        let mut entity = match repo.get_event(&id) {
+            Ok(Some(event)) => event.to_entity(),
+            Ok(None) => return Err("Event not found".into()),
+            Err(e) => return Err(Box::new(e)),
+        };
+        entity.summary = params.summary;
+        entity.description = params.description;
+        entity.location = params.location;
+        entity.end_at = params.end_at;
+        entity.start_at = params.start_at;
+        entity.latitude = params.latitude;
+        entity.longitude = params.longitude;
+        entity.all_day = params.all_day;
+        entity.url = params.url;
+        entity.calendar_id = params.calendar_id;
+        let _ = repo.update_event(&entity)?;
+        let json = CalendarEventMapper::to_json(entity);
+        Ok(json)
+    }
+
+    pub fn delete_event(&self, id: String) -> Result<(), Box<dyn std::error::Error>> {
+        let repo = CalendarEventRepository::new("db/dev.db")?;
+        match repo.delete_event(&id) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(Box::new(e)),
+        }
     }
 }

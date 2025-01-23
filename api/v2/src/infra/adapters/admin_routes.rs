@@ -1,21 +1,11 @@
 use crate::use_cases::calendar_use_case::CalendarUseCase;
+use crate::use_cases::interfaces::{CalendarDetailParams, CalendarEventParams};
+use actix_web::middleware::Identity;
 use actix_web::{web, HttpResponse, Responder};
 use once_cell::sync::Lazy;
-use serde::Deserialize;
 use serde_json::json;
 
 static CALENDAR_USE_CASE: Lazy<CalendarUseCase> = Lazy::new(|| CalendarUseCase {});
-
-#[derive(Deserialize)]
-struct CreateCalendarDetail {
-    id: String,
-    name: String,
-}
-
-#[derive(Deserialize)]
-struct UpdateCalendarDetail {
-    name: String,
-}
 
 async fn admin_calendar_details_index() -> impl Responder {
     match CALENDAR_USE_CASE.get_all_calendar_details() {
@@ -24,7 +14,7 @@ async fn admin_calendar_details_index() -> impl Responder {
     }
 }
 
-async fn admin_calendar_details_create(item: web::Json<CreateCalendarDetail>) -> impl Responder {
+async fn admin_calendar_details_create(item: web::Json<CalendarDetailParams>) -> impl Responder {
     let id = item.id.clone();
     let name = item.name.clone();
     match CALENDAR_USE_CASE.create_calendar_detail(id, name) {
@@ -41,11 +31,8 @@ async fn admin_calendar_details_show(path: web::Path<(String,)>) -> impl Respond
     }
 }
 
-async fn admin_calendar_details_update(
-    path: web::Path<(String,)>,
-    item: web::Json<UpdateCalendarDetail>,
-) -> impl Responder {
-    let id = path.into_inner().0;
+async fn admin_calendar_details_update(item: web::Json<CalendarDetailParams>) -> impl Responder {
+    let id = item.id.clone();
     let name = item.name.clone();
     match CALENDAR_USE_CASE.update_calendar_detail(id, name) {
         Ok(json) => HttpResponse::Ok().json(json),
@@ -68,8 +55,11 @@ async fn admin_calendar_events_index() -> impl Responder {
     }
 }
 
-async fn admin_calendar_events_create() -> impl Responder {
-    "admin_calendar_events_create"
+async fn admin_calendar_events_create(params: web::Json<CalendarEventParams>) -> impl Responder {
+    match CALENDAR_USE_CASE.create_calendar_event(params.into_inner()) {
+        Ok(json) => HttpResponse::Ok().json(json),
+        Err(e) => HttpResponse::InternalServerError().json(json!({ "error": e.to_string() })),
+    }
 }
 
 async fn admin_calendar_events_show(path: web::Path<(String,)>) -> impl Responder {
@@ -80,12 +70,23 @@ async fn admin_calendar_events_show(path: web::Path<(String,)>) -> impl Responde
     }
 }
 
-async fn admin_calendar_events_update(path: web::Path<(String,)>) -> impl Responder {
-    format!("admin_calendar_events_update: {}", path.into_inner().0)
+async fn admin_calendar_events_update(
+    path: web::Path<(String,)>,
+    params: web::Json<CalendarEventParams>,
+) -> impl Responder {
+    let id = path.into_inner().0;
+    match CALENDAR_USE_CASE.update_event(id, params.into_inner()) {
+        Ok(json) => HttpResponse::Ok().json(json),
+        Err(e) => HttpResponse::InternalServerError().json(json!({ "error": e.to_string() })),
+    }
 }
 
 async fn admin_calendar_events_destroy(path: web::Path<(String,)>) -> impl Responder {
-    format!("admin_calendar_events_destroy: {}", path.into_inner().0)
+    let id = path.into_inner().0;
+    match CALENDAR_USE_CASE.delete_event(id) {
+        Ok(_) => HttpResponse::Ok().json(json!({ "message": "Event deleted" })),
+        Err(e) => HttpResponse::InternalServerError().json(json!({ "error": e.to_string() })),
+    }
 }
 
 pub fn init(cfg: &mut web::ServiceConfig) {

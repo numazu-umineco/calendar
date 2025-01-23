@@ -67,7 +67,7 @@ impl CalendarEventRepository {
         )
     }
 
-    pub fn delete_event(&self, id: &str) -> Result<usize> {
+    pub fn delete_event(&self, id: &String) -> Result<usize> {
         self.conn
             .execute("DELETE FROM calendar_events WHERE id = ?1", params![id])
     }
