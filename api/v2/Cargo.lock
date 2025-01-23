@@ -283,7 +283,9 @@ dependencies = [
  "actix-web",
  "chrono",
  "icalendar",
+ "once_cell",
  "rusqlite",
+ "serde",
  "serde_json",
  "uuid",
 ]

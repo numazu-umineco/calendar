@@ -173,6 +173,11 @@ impl CalendarDetailRepository {
         )
     }
 
+    pub fn delete(&self, id: String) -> Result<usize> {
+        self.conn
+            .execute("DELETE FROM calendar_details WHERE id = ?1", params![id])
+    }
+
     fn map_calendar_detail_schema(row: &rusqlite::Row<'_>) -> Result<CalendarDetailSchema> {
         let created_at: String = row.get(2)?;
         let updated_at: String = row.get(3)?;

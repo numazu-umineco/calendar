@@ -1,4 +1,5 @@
 use crate::domain::entities::calendar_detail::CalendarDetail;
+use crate::infra::mappers::calendar_event_mapper::CalendarEventMapper;
 use serde_json::json;
 use serde_json::Value;
 
@@ -9,6 +10,7 @@ impl CalendarDetailMapper {
         json!({
             "id": entity.id,
             "name": entity.name,
+            "events": entity.events.iter().map(|event| CalendarEventMapper::to_json(event.clone())).collect::<Vec<_>>(),
         })
     }
 }

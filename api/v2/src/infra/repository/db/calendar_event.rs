@@ -16,7 +16,7 @@ impl CalendarEventRepository {
 
     pub fn all(&self) -> Result<Vec<CalendarEventSchema>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, summary, start_at, end_at, location, description, created_at, updated_at FROM calendar_events"
+            "SELECT id, summary, description, location, latitude, longitude, start_at, end_at, calendar_detail_id, all_day, url, created_at, updated_at FROM calendar_events WHERE discarded_at IS NULL",
         )?;
         let rows = stmt.query_map([], |row| Self::map_calendar_event_schema(row))?;
 
@@ -25,7 +25,7 @@ impl CalendarEventRepository {
 
     pub fn get_event(&self, id: &str) -> Result<Option<CalendarEventSchema>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, summary, start_at, end_at, location, description, created_at, updated_at FROM calendar_events WHERE id = ?1",
+            "SELECT id, summary, description, location, latitude, longitude, start_at, end_at, calendar_detail_id, all_day, url, created_at, updated_at FROM calendar_events WHERE discarded_at IS NULL AND id = ?1",
         )?;
         let mut rows = stmt.query(params![id])?;
 
