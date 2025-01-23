@@ -1,6 +1,5 @@
 use crate::domain::entities::calendar_event::CalendarEvent;
 use chrono::{DateTime, Utc};
-use uuid::Uuid;
 
 #[derive(Debug, Clone)]
 pub struct CalendarDetail {
@@ -40,7 +39,6 @@ mod tests {
     use super::*;
     use crate::domain::entities::calendar_event::CalendarEvent;
     use chrono::Utc;
-    use uuid::Uuid;
 
     #[test]
     fn test_new_calendar_detail() {

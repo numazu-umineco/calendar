@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::domain::entities::calendar_event::CalendarEvent;
 use crate::infra::schema::calendar_event::CalendarEventSchema;
 use chrono::{DateTime, Utc};
@@ -18,7 +16,7 @@ impl CalendarEventRepository {
 
     pub fn all(&self) -> Result<Vec<CalendarEventSchema>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, summary, start_at, end_at, location, description, created_at, updated_at FROM calendar_events",
+            "SELECT id, summary, start_at, end_at, location, description, created_at, updated_at FROM calendar_events"
         )?;
         let rows = stmt.query_map([], |row| Self::map_calendar_event_schema(row))?;
 
@@ -84,6 +82,14 @@ impl CalendarEventRepository {
         let events = stmt.query_map(params![calendar_detail_id], |row| {
             Self::map_calendar_event_schema(row)
         })?;
+        events.collect()
+    }
+
+    pub fn recent(&self, limit: usize) -> Result<Vec<CalendarEventSchema>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, summary, description, location, latitude, longitude, start_at, end_at, calendar_detail_id, all_day, url, created_at, updated_at FROM calendar_events ORDER BY created_at DESC LIMIT ?1",
+        )?;
+        let events = stmt.query_map(params![limit], |row| Self::map_calendar_event_schema(row))?;
         events.collect()
     }
 

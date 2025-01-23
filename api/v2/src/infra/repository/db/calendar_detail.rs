@@ -28,19 +28,17 @@ impl CalendarDetailRepository {
 
     pub fn all(&self) -> Result<Vec<CalendarDetailSchema>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, name, created_at, updated_at, discarded_at FROM calendars WHERE discarded_at IS NULL",
+            "SELECT id, name, created_at, updated_at, discarded_at FROM calendar_details",
         )?;
         let rows = stmt.query_map([], |row| Self::map_calendar_detail_schema(row))?;
-
         rows.collect()
     }
 
     pub fn kept_all(&self) -> Result<Vec<CalendarDetailSchema>> {
         let mut stmt = self.conn.prepare(
-            "SELECT id, name, created_at, updated_at, discarded_at FROM calendars WHERE discarded_at IS NULL",
+            "SELECT id, name, created_at, updated_at, discarded_at FROM calendar_details WHERE discarded_at IS NULL",
         )?;
         let rows = stmt.query_map([], |row| Self::map_calendar_detail_schema(row))?;
-
         rows.collect()
     }
 
@@ -58,7 +56,7 @@ impl CalendarDetailRepository {
         }
     }
 
-    pub fn get_detail_with_events(&self, id: &str) -> Result<Option<CalendarDetailSchema>> {
+    pub fn get_detail_with_events(&self, id: String) -> Result<Option<CalendarDetailSchema>> {
         let mut stmt = self.conn.prepare(
             "
             SELECT

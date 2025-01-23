@@ -34,7 +34,7 @@ impl CalendarDetailSchema {
             id: self.id.clone(),
             name: self.name.clone(),
             discarded_at: self.discarded_at,
-            events: vec![],
+            events: self.events.iter().map(|event| event.to_entity()).collect(),
         }
     }
 }

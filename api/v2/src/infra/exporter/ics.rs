@@ -3,28 +3,26 @@ use std::io::Write;
 
 use crate::domain::entities::calendar_detail::CalendarDetail;
 use crate::domain::entities::calendar_event::CalendarEvent;
-use icalendar::{Calendar, CalendarDateTime, Class, Component, Event, EventLike, Property, Todo};
+use icalendar::{Calendar, CalendarDateTime, Class, Component, Event, EventLike};
 
-pub struct IcsExporter {
-    detail: CalendarDetail,
-}
+pub struct IcsExporter {}
 
 impl IcsExporter {
-    pub fn new(detail: CalendarDetail) -> IcsExporter {
-        IcsExporter { detail: detail }
+    pub fn new() -> IcsExporter {
+        IcsExporter {}
     }
 
-    pub fn export(self, file_path: &str) -> std::io::Result<()> {
-        let calendar = self.to_ical();
+    pub fn export(self, entity: CalendarDetail, file_path: &str) -> std::io::Result<()> {
+        let calendar = self.to_ical(entity);
         let mut file = File::create(file_path)?;
         file.write_all(calendar.to_string().as_bytes())?;
         Ok(())
     }
 
-    pub fn to_ical(&self) -> Calendar {
+    fn to_ical(&self, entity: CalendarDetail) -> Calendar {
         let mut calendar = Calendar::new();
-        calendar.name(&self.detail.name);
-        for event in &self.detail.events {
+        calendar.name(&entity.name);
+        for event in &entity.events {
             calendar.push(Self::event_to_ical(event));
         }
         calendar
