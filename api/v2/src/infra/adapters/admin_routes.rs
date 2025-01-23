@@ -1,6 +1,5 @@
 use crate::use_cases::calendar_use_case::CalendarUseCase;
 use crate::use_cases::interfaces::{CalendarDetailParams, CalendarEventParams};
-use actix_web::middleware::Identity;
 use actix_web::{web, HttpResponse, Responder};
 use once_cell::sync::Lazy;
 use serde_json::json;

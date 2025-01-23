@@ -1,5 +1,5 @@
 // use std::fs::File;
-// use std::io::Write;
+// use std::.io::Write;
 // use std::sync::Arc;
 
 //use crate::domain::entities;
@@ -23,14 +23,6 @@ impl CalendarDetailRepository {
     pub fn new(db_path: &str) -> Result<Self> {
         let conn = Connection::open(db_path)?;
         Ok(Self { conn })
-    }
-
-    pub fn all(&self) -> Result<Vec<CalendarDetailSchema>> {
-        let mut stmt = self.conn.prepare(
-            "SELECT id, name, created_at, updated_at, discarded_at FROM calendar_details",
-        )?;
-        let rows = stmt.query_map([], |row| Self::map_calendar_detail_schema(row))?;
-        rows.collect()
     }
 
     pub fn kept_all(&self) -> Result<Vec<CalendarDetailSchema>> {
@@ -139,37 +131,11 @@ impl CalendarDetailRepository {
         Ok(0)
     }
 
-    // pub fn create_detail_with_events(
-    //     &self,
-    //     entity: &CalendarDetail,
-    //     event_repository: CalendarEventRepository,
-    // ) -> Result<usize> {
-    //     let schema = CalendarDetailSchema::from_entity(entity);
-    //     let _= self.conn.execute(
-    //         "INSERT INTO calendar_details (id, name, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
-    //         params![schema.id, schema.name, schema.created_at.to_rfc3339(), schema.updated_at.to_rfc3339()],
-    //     );
-
-    //     let _ = entity
-    //         .events
-    //         .iter()
-    //         .map(|e| event_repository.create_event(e));
-    //     Ok(0)
-    // }
-
     pub fn update_detail(&self, entity: &CalendarDetail) -> Result<usize> {
         let schema = CalendarDetailSchema::from_entity(entity);
         self.conn.execute(
             "UPDATE calendar_details SET name = ?1, updated_at = ?2 WHERE id = ?3",
             params![schema.name, schema.updated_at.to_rfc3339(), schema.id],
-        )
-    }
-
-    pub fn discard_detail(&self, entity: &CalendarDetail) -> Result<usize> {
-        let discarded_at = entity.discarded_at.unwrap_or_else(Utc::now).to_rfc3339();
-        self.conn.execute(
-            "UPDATE calendar_details SET discarded_at = ?1, updated_at = ?2 WHERE id = ?3",
-            params![discarded_at, discarded_at, entity.id],
         )
     }
 

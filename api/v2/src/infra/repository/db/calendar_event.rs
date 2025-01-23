@@ -72,19 +72,6 @@ impl CalendarEventRepository {
             .execute("DELETE FROM calendar_events WHERE id = ?1", params![id])
     }
 
-    pub fn get_events_by_calendar_detail_id(
-        &self,
-        calendar_detail_id: &str,
-    ) -> Result<Vec<CalendarEventSchema>> {
-        let mut stmt = self.conn.prepare(
-            "SELECT id, summary, description, location, latitude, longitude, start_at, end_at, calendar_detail_id, all_day, url, created_at, updated_at FROM calendar_events WHERE calendar_detail_id = ?1",
-        )?;
-        let events = stmt.query_map(params![calendar_detail_id], |row| {
-            Self::map_calendar_event_schema(row)
-        })?;
-        events.collect()
-    }
-
     pub fn recent(&self, limit: usize) -> Result<Vec<CalendarEventSchema>> {
         let mut stmt = self.conn.prepare(
             "SELECT id, summary, description, location, latitude, longitude, start_at, end_at, calendar_detail_id, all_day, url, created_at, updated_at FROM calendar_events ORDER BY created_at DESC LIMIT ?1",
