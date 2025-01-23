@@ -6,18 +6,24 @@ use crate::infra::mappers::calendar_event_mapper::CalendarEventMapper;
 use crate::infra::repository::db::calendar_detail::CalendarDetailRepository;
 use crate::infra::repository::db::calendar_event::CalendarEventRepository;
 use crate::use_cases::interfaces::CalendarEventParams;
+use dotenv::dotenv;
 use serde_json::Value;
+use std::env;
 use uuid::Uuid;
 
 pub struct CalendarUseCase {
-    calendar_detail_repo: CalendarDetailRepository,
-    calendar_event_repo: CalendarEventRepository,
+    pub calendar_detail_repo: CalendarDetailRepository,
+    pub calendar_event_repo: CalendarEventRepository,
 }
+
+unsafe impl Sync for CalendarUseCase {}
 
 impl CalendarUseCase {
     pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
-        let calendar_detail_repo = CalendarDetailRepository::new("db/dev.db")?;
-        let calendar_event_repo = CalendarEventRepository::new("db/dev.db")?;
+        dotenv().ok(); // Load environment variables from .env file
+        let database_url = env::var("DATABASE_URL")?;
+        let calendar_detail_repo = CalendarDetailRepository::new(&database_url)?;
+        let calendar_event_repo = CalendarEventRepository::new(&database_url)?;
         Ok(Self {
             calendar_detail_repo,
             calendar_event_repo,

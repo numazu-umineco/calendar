@@ -10,7 +10,7 @@ async fn public_health_alive() -> impl Responder {
 }
 
 async fn public_calendar_all() -> impl Responder {
-    let use_case = CalendarUseCase {};
+    let use_case = CalendarUseCase::new().unwrap();
     match use_case.get_all_calendar_details() {
         Ok(json) => HttpResponse::Ok().json(json),
         Err(e) => HttpResponse::InternalServerError().json(json!({ "error": e.to_string() })),
@@ -19,7 +19,7 @@ async fn public_calendar_all() -> impl Responder {
 
 async fn public_calendar_download(path: web::Path<(String,)>, req: HttpRequest) -> impl Responder {
     let calendar_id = path.into_inner().0;
-    let use_case = CalendarUseCase {};
+    let use_case = CalendarUseCase::new().unwrap();
     let exporter = IcsExporter::new();
     match use_case.export_calendar(calendar_id, exporter) {
         Ok(file_path) => {
@@ -34,7 +34,7 @@ async fn public_calendar_download(path: web::Path<(String,)>, req: HttpRequest) 
 }
 
 async fn public_calendar_event_recent() -> impl Responder {
-    let use_case = CalendarUseCase {};
+    let use_case = CalendarUseCase::new().unwrap();
     match use_case.get_recent_events(10) {
         Ok(json) => HttpResponse::Ok().json(json),
         Err(e) => HttpResponse::InternalServerError().json(json!({ "error": e.to_string() })),

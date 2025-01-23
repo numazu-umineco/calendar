@@ -4,7 +4,7 @@ use actix_web::{web, HttpResponse, Responder};
 use once_cell::sync::Lazy;
 use serde_json::json;
 
-static CALENDAR_USE_CASE: Lazy<CalendarUseCase> = Lazy::new(|| CalendarUseCase {});
+static CALENDAR_USE_CASE: Lazy<CalendarUseCase> = Lazy::new(|| CalendarUseCase::new().unwrap());
 
 async fn admin_calendar_details_index() -> impl Responder {
     match CALENDAR_USE_CASE.get_all_calendar_details() {
