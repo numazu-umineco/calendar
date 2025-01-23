@@ -36,7 +36,11 @@ async fn public_calendar_download(path: web::Path<(String,)>, req: HttpRequest) 
 async fn public_calendar_event_recent() -> impl Responder {
     let use_case = CalendarUseCase {};
     match use_case.get_recent_events(10) {
-        Ok(json) => HttpResponse::Ok().json(json),
+        Ok(json) => {
+            println!("{:?}", json);
+            HttpResponse::Ok().json(json)
+        }
+
         Err(e) => HttpResponse::InternalServerError().json(json!({ "error": e.to_string() })),
     }
 }

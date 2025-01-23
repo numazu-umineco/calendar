@@ -8,7 +8,6 @@ use crate::{
     infra::schema::calendar_event::CalendarEventSchema,
 };
 //use crate::domain::entities::calendar_event::CalendarEvent;
-use crate::infra::repository::db::calendar_event::CalendarEventRepository;
 use crate::infra::schema::calendar_detail::CalendarDetailSchema;
 use chrono::{DateTime, Utc};
 //use icalendar::{Calendar, CalendarDateTime, Class, Event, Property, Todo};
@@ -140,23 +139,23 @@ impl CalendarDetailRepository {
         Ok(0)
     }
 
-    pub fn create_detail_with_events(
-        &self,
-        entity: &CalendarDetail,
-        event_repository: CalendarEventRepository,
-    ) -> Result<usize> {
-        let schema = CalendarDetailSchema::from_entity(entity);
-        let _= self.conn.execute(
-            "INSERT INTO calendar_details (id, name, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
-            params![schema.id, schema.name, schema.created_at.to_rfc3339(), schema.updated_at.to_rfc3339()],
-        );
+    // pub fn create_detail_with_events(
+    //     &self,
+    //     entity: &CalendarDetail,
+    //     event_repository: CalendarEventRepository,
+    // ) -> Result<usize> {
+    //     let schema = CalendarDetailSchema::from_entity(entity);
+    //     let _= self.conn.execute(
+    //         "INSERT INTO calendar_details (id, name, created_at, updated_at) VALUES (?1, ?2, ?3, ?4)",
+    //         params![schema.id, schema.name, schema.created_at.to_rfc3339(), schema.updated_at.to_rfc3339()],
+    //     );
 
-        let _ = entity
-            .events
-            .iter()
-            .map(|e| event_repository.create_event(e));
-        Ok(0)
-    }
+    //     let _ = entity
+    //         .events
+    //         .iter()
+    //         .map(|e| event_repository.create_event(e));
+    //     Ok(0)
+    // }
 
     pub fn update_detail(&self, entity: &CalendarDetail) -> Result<usize> {
         let schema = CalendarDetailSchema::from_entity(entity);

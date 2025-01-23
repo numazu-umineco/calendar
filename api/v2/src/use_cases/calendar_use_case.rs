@@ -3,6 +3,7 @@ use crate::infra::mappers::calendar_detail_mapper::CalendarDetailMapper;
 use crate::infra::mappers::calendar_event_mapper::CalendarEventMapper;
 use crate::infra::repository::db::calendar_detail::CalendarDetailRepository;
 use crate::infra::repository::db::calendar_event::CalendarEventRepository;
+use crate::infra::schema::calendar_event::CalendarEventSchema;
 use serde_json::Value;
 use uuid::Uuid;
 
@@ -44,8 +45,7 @@ impl CalendarUseCase {
         let events = repo.recent(limit)?;
         let json = events
             .iter()
-            .map(|event| event.to_entity())
-            .map(|entity| CalendarEventMapper::to_json(entity))
+            .map(|event| CalendarEventMapper::to_json(event.to_entity()))
             .collect::<Vec<_>>();
         Ok(Value::Array(json))
     }

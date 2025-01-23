@@ -35,7 +35,7 @@ impl IcsExporter {
             .starts(CalendarDateTime::from(event.start_at))
             .ends(CalendarDateTime::from(event.end_at))
             .class(Class::Public)
-            .location(&event.location)
+            .location(event.location.as_deref().unwrap_or(""))
             .done()
     }
 }

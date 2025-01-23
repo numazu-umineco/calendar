@@ -94,10 +94,10 @@ impl CalendarEventRepository {
     }
 
     fn map_calendar_event_schema(row: &rusqlite::Row<'_>) -> Result<CalendarEventSchema> {
-        let start_at: String = row.get(2)?;
-        let end_at: String = row.get(3)?;
-        let created_at: String = row.get(6)?;
-        let updated_at: String = row.get(7)?;
+        let start_at: String = row.get(6)?;
+        let end_at: String = row.get(7)?;
+        let created_at: String = row.get(11)?;
+        let updated_at: String = row.get(12)?;
 
         Ok(CalendarEventSchema {
             id: row.get(0)?,
@@ -108,11 +108,11 @@ impl CalendarEventRepository {
             longitude: row.get(5)?,
             start_at: parse_datetime(&start_at)?,
             end_at: parse_datetime(&end_at)?,
-            calendar_id: row.get(6)?,
+            calendar_id: row.get(8)?,
             created_at: parse_datetime(&created_at)?,
             updated_at: parse_datetime(&updated_at)?,
-            all_day: row.get(13)?,
-            url: row.get(14)?,
+            all_day: row.get(9)?,
+            url: row.get(10)?,
         })
     }
 }
