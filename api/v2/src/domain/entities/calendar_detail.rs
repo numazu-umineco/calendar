@@ -23,8 +23,6 @@ impl CalendarDetail {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::entities::calendar_event::CalendarEvent;
-    use chrono::Utc;
 
     #[test]
     fn test_new_calendar_detail() {

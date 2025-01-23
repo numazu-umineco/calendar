@@ -1,17 +1,9 @@
-// use std::fs::File;
-// use std::.io::Write;
-// use std::sync::Arc;
-
-//use crate::domain::entities;
+use crate::infra::schema::calendar_detail::CalendarDetailSchema;
 use crate::{
     domain::entities::calendar_detail::CalendarDetail,
     infra::schema::calendar_event::CalendarEventSchema,
 };
-//use crate::domain::entities::calendar_event::CalendarEvent;
-use crate::infra::schema::calendar_detail::CalendarDetailSchema;
 use chrono::{DateTime, Utc};
-//use icalendar::{Calendar, CalendarDateTime, Class, Event, Property, Todo};
-//use rusqlite::types::{FromSql, FromSqlError, FromSqlResult, ValueRef};
 use rusqlite::{params, Connection, Result};
 
 #[derive(Debug)]
