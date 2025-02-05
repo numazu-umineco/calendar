@@ -31,7 +31,7 @@ ENV LITESTREAM_VERSION=0.3.5
 ADD https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-v$LITESTREAM_VERSION-linux-amd64.tar.gz /tmp/litestream.tar.gz
 RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
 
-FROM --platform=linux/amd64 alpine:latest
+FROM --platform=linux/amd64 scratch
 WORKDIR /app
 COPY --from=litestream /usr/local/bin/litestream /usr/local/bin/litestream
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api /app/app
