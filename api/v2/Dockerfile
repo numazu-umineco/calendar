@@ -1,34 +1,42 @@
-FROM rust:1.82 as builder
+FROM --platform=linux/amd64 rust:1.82 as builder
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the Cargo.toml and Cargo.lock files
+RUN apt-get update && apt-get install -y \
+  musl-tools musl-dev
+
+RUN rustup target add x86_64-unknown-linux-musl
+
+ENV PKG_CONFIG_ALLOW_CROSS=1
+ENV OPENSSL_STATIC=1
+ENV CC_x86_64_unknown_linux_musl=musl-gcc
+ENV AR_x86_64_unknown_linux_musl=ar
+ENV RANLIB_x86_64_unknown_linux_musl=ranlib
+ENV RUSTFLAGS="-C target-feature=-crt-static -C link-args=-lm"
+
 COPY Cargo.toml Cargo.lock ./
 
-# Create a dummy main.rs file to build dependencies
-RUN mkdir src && echo "fn main() {}" > src/main.rs
-
-# Build the dependencies
-RUN cargo build --release && rm -rf src
-
-# Copy the source code
 COPY . .
 
-# Build the application
-RUN cargo build --release
+RUN cargo build --release --target x86_64-unknown-linux-musl
 
-# Use a minimal base image for the final stage
-FROM scratch©
+RUN rm -rf /app/target/x86_64-unknown-linux-musl/release/build
+RUN rm -rf /usr/local/cargo/registry
 
-# Set the working directory
+FROM --platform=linux/amd64 debian:bullseye-slim
+
 WORKDIR /app
 
-# Copy the compiled binary from the builder stage
-COPY --from=builder /app/target/release/api .
+# COPY litestream.yml litestream.yml
 
-# Expose the port that the application will run on
+ENV LITESTREAM_VERSION=0.3.5
+
+ADD https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-v$LITESTREAM_VERSION-linux-amd64.tar.gz /tmp/litestream.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
+
+# 正しいバイナリファイル名を指定します
+COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api /app/app
+
 EXPOSE 8080
 
-# Set the entrypoint to the compiled binary
-CMD ["./api"]
+CMD ["app"]
