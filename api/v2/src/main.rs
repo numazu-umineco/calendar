@@ -6,8 +6,11 @@ use crate::infra::adapters::admin_routes::init as admin_init;
 use crate::infra::adapters::public_routes::init as public_init;
 use crate::infra::exporter::ics::IcsExporter;
 use crate::use_cases::calendar_use_case::CalendarUseCase; // Ensure this is from the same crate
+use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
+use chrono::Utc;
 use clap::{Parser, Subcommand};
+use std::io::Write;
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -29,10 +32,28 @@ async fn main() -> std::io::Result<()> {
 
     match args.command {
         Commands::Run { .. } => {
-            HttpServer::new(|| App::new().configure(public_init).configure(admin_init))
-                .bind("127.0.0.1:8080")?
-                .run()
-                .await
+            std::env::set_var("RUST_LOG", "actix_web=info");
+            std::env::set_var("RUST_LOG_FORMAT", "json");
+            env_logger::Builder::from_default_env()
+                .format(|buf, record| {
+                    writeln!(
+                        buf,
+                        "{{\"level\":\"{}\",\"time\":\"{}\",\"message\":\"{}\"}}",
+                        record.level(),
+                        Utc::now().to_rfc3339(),
+                        record.args()
+                    )
+                })
+                .init();
+            HttpServer::new(|| {
+                App::new()
+                    .wrap(Logger::default())
+                    .configure(public_init)
+                    .configure(admin_init)
+            })
+            .bind("0.0.0.0:8080")?
+            .run()
+            .await
         }
 
         Commands::ExportIcal { .. } => {
