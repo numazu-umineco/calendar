@@ -14,28 +14,24 @@ services:
     depends_on:
       - api
   api:
-    image: api
+    image: api-v2
+    platform: linux/amd64
     build:
-      context: ./api
-      dockerfile: Dockerfile.dev
-    entrypoint: ["/rails/docker-entrypoint.sh"]
-    command:
-      rails s -b 0.0.0.0
-    volumes:
-      - ./api:/rails
-    tmpfs:
-      - /rails/db/litestream:size=100M
+      context: ./api/v2
+      dockerfile: Dockerfile
+    entrypoint: ["/app/docker-entrypoint.sh"]
     env_file:
-      - ./api/.env
+      - ./api/v2/.env
     environment:
       TZ: Asia/Tokyo
+      DATABASE_URL: /app/db/database.sqlite3
       AWS_ACCESS_KEY_ID: ${MINIO_ACCSES_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
     ports:
-      - '3000:3000'
-    depends_on:
-      storage:
-        condition: service_healthy
+      - '8080:8080'
+    # depends_on:
+    #   storage:
+    #     condition: service_healthy
   storage:
     image: minio/minio:latest
     ports:
@@ -47,12 +43,12 @@ services:
     environment:
       - MINIO_ACCESS_KEY_ID
       - MINIO_SECRET_ACCESS_KEY
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 5s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
+    # healthcheck:
+    #   test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 3
+    #   start_period: 5s
 
 volumes:
   node_modules:

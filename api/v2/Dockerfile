@@ -15,8 +15,7 @@ ENV RANLIB_x86_64_unknown_linux_musl=ranlib
 ENV RUSTFLAGS="-C target-feature=-crt-static -C link-args=-lm"
 
 COPY Cargo.toml Cargo.lock ./
-
-COPY . .
+COPY ./src/ /app/src/
 
 RUN cargo build --release --target x86_64-unknown-linux-musl
 
@@ -27,15 +26,18 @@ FROM --platform=linux/amd64 debian:bullseye-slim
 
 WORKDIR /app
 
-# COPY litestream.yml litestream.yml
+COPY litestream.yml /app/db/litestream.yml
 
 ENV LITESTREAM_VERSION=0.3.5
 
 ADD https://github.com/benbjohnson/litestream/releases/download/v$LITESTREAM_VERSION/litestream-v$LITESTREAM_VERSION-linux-amd64.tar.gz /tmp/litestream.tar.gz
-RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz \
+  && rm /tmp/litestream.tar.gz
 
 # 正しいバイナリファイル名を指定します
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/api /app/app
+
+COPY ./docker-entrypoint.sh /app/docker-entrypoint.sh
 
 EXPOSE 8080
 
