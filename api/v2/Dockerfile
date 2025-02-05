@@ -53,4 +53,4 @@ RUN apk update --no-cache && \
 
 EXPOSE 8080
 
-CMD ["./app"]
+CMD ["./app", "run"]
