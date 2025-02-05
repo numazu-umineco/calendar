@@ -57,11 +57,13 @@ async fn main() -> std::io::Result<()> {
         }
 
         Commands::ExportIcal { .. } => {
+            println!("Exporting calendars to ics files");
             let use_case = CalendarUseCase::new().expect("Failed to create CalendarUseCase");
             let exporter = IcsExporter::new();
             use_case
                 .export(exporter)
                 .expect("Failed to export calendars");
+            println!("Exported calendars to ics files");
             Ok(())
         }
     }
