@@ -1,0 +1,6 @@
+dbs:
+  - path: /app/db/database.sqlite3
+    replicas:
+      - url: s3://database:9000/
+        endpoint: http://storage:9000
+        region: us-east-1
