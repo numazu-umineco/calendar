@@ -1,0 +1,10 @@
+FROM golang:1.23 as builder
+
+WORKDIR /app
+
+RUN go install github.com/rubenv/sql-migrate/...@latest
+
+COPY db db
+COPY dbconfig.yml dbconfig.yml
+
+CMD [ "sql-migrate" , "up" ]
