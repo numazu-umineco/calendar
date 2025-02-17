@@ -26,6 +26,17 @@ services:
       AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
     ports:
       - '3000:8080'
+  storage:
+    image: minio/minio:latest
+    ports:
+      - 9001:9001
+    volumes:
+      - miniostorage:/data
+    command:
+      server /data --console-address ":9001"
+    environment:
+      - MINIO_ACCESS_KEY_ID
+      - MINIO_SECRET_ACCESS_KEY
 
 volumes:
   node_modules:
