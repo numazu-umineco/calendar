@@ -6,11 +6,12 @@ use crate::infra::adapters::admin_routes::init as admin_init;
 use crate::infra::adapters::public_routes::init as public_init;
 use crate::infra::exporter::ics::IcsExporter;
 use crate::use_cases::calendar_use_case::CalendarUseCase; // Ensure this is from the same crate
+use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer};
 use chrono::Utc;
 use clap::{Parser, Subcommand};
-use std::io::Write;
+use std::io::Write; // add this import
 
 /// Simple program to greet a person
 #[derive(Parser, Debug)]
@@ -32,6 +33,9 @@ async fn main() -> std::io::Result<()> {
 
     match args.command {
         Commands::Run { .. } => {
+            let allowed_origin = std::env::var("ALLOWED_ORIGIN")
+                .unwrap_or_else(|_| "http://localhost:3000".to_string());
+
             std::env::set_var("RUST_LOG", "actix_web=info");
             std::env::set_var("RUST_LOG_FORMAT", "json");
             env_logger::Builder::from_default_env()
@@ -45,9 +49,15 @@ async fn main() -> std::io::Result<()> {
                     )
                 })
                 .init();
-            HttpServer::new(|| {
+
+            HttpServer::new(move || {
                 App::new()
                     .wrap(Logger::default())
+                    .wrap(
+                        Cors::default()
+                            .allowed_origin(&allowed_origin)
+                            .allowed_methods(vec!["GET", "POST", "PUT", "DELETE"]),
+                    )
                     .configure(public_init)
                     .configure(admin_init)
             })
