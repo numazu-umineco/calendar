@@ -26,6 +26,15 @@ services:
       AWS_SECRET_ACCESS_KEY: ${MINIO_SECRET_ACCESS_KEY}
     ports:
       - '3000:8080'
+    volumes:
+      - database:/app/db
+  migrator:
+    build:
+      context: ./api/v2/
+      dockerfile: Dockerfile.migrate
+    command: ["cat", "/dev/null"]
+    volumes:
+      - database:/app/db
   storage:
     image: minio/minio:latest
     ports:
@@ -41,6 +50,7 @@ services:
 volumes:
   node_modules:
   miniostorage:
+  database:
 
 networks:
   default:
